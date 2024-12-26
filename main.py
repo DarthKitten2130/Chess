@@ -61,8 +61,9 @@ def main():
     chess_grid = [{},{},{},{},{},{},{},{}]
     board_grid = [{},{},{},{},{},{},{},{}]
     turn = 'white'
-    pieceGroup = pg.sprite.Group()
-    pieceGroup.add(
+    live_pieces = pg.sprite.Group()
+    dead_pieces = pg.sprite.Group()
+    live_pieces.add(
          Rook(7, 0, "black"),
          Rook(0, 0, "black"),
          Knight(6, 0, "black"),
@@ -105,9 +106,9 @@ def main():
 
         screen.fill((153, 102, 0))
         board_init(screen,board_grid)
-        for piece in pieceGroup:
+        for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
-        pieceGroup.draw(screen)
+        live_pieces.draw(screen)
         pg.display.flip()
 
 if __name__ == '__main__':
