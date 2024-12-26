@@ -10,3 +10,27 @@ class Piece(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x * 180
         self.rect.y = y * 180
+
+class King(Piece):
+    def __init__(self, x, y, color):
+        super().__init__(x, y, color, "king")
+
+class Queen(Piece):
+    def __init__(self, x, y, color):
+        super().__init__(x, y, color, "queen")
+
+class Bishop(Piece):
+    def __init__(self, x, y, color):
+        super().__init__(x, y, color, "bishop")
+
+class Knight(Piece):
+    def __init__(self, x, y, color):
+        super().__init__(x, y, color, "knight")
+
+class Rook(Piece):
+    def __init__(self, x, y, color):
+        super().__init__(x, y, color, "rook")
+
+class Pawn(Piece):
+    def __init__(self, x, y, color):
+        super().__init__(x, y, color, "pawn")

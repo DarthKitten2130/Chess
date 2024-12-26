@@ -1,5 +1,5 @@
 import pygame as pg
-from classes import Piece
+from classes import *
 
 def board_init(screen,grid):
     tilesize = 180
@@ -63,38 +63,38 @@ def main():
     turn = 'white'
     pieceGroup = pg.sprite.Group()
     pieceGroup.add(
-         Piece(7, 0, "black", "rook"),
-         Piece(0, 0, "black", "rook"),
-         Piece(6, 0, "black", "knight"),
-         Piece(1, 0, "black", "knight"),
-         Piece(2, 0, "black", "bishop"),
-         Piece(5, 0, "black", "bishop"),
-         Piece(3, 0, "black", "queen"),
-         Piece(4, 0, "black", "king"),
-         Piece(0, 1, "black", "pawn"),
-         Piece(1, 1, "black", "pawn"),
-         Piece(2, 1, "black", "pawn"),
-         Piece(3, 1, "black", "pawn"),
-         Piece(4, 1, "black", "pawn"),
-         Piece(5, 1, "black", "pawn"),
-         Piece(6, 1, "black", "pawn"),
-         Piece(7, 1, "black", "pawn"),
-         Piece(0, 7, "white", "rook"),
-         Piece(7, 7, "white", "rook"),
-         Piece(1, 7, "white", "knight"),
-         Piece(6, 7, "white", "knight"),
-         Piece(2, 7, "white", "bishop"),
-         Piece(5, 7, "white", "bishop"),
-         Piece(3, 7, "white", "queen"),
-         Piece(4, 7, "white", "king"),
-         Piece(0, 6, "white", "pawn"),
-         Piece(1, 6, "white", "pawn"),
-         Piece(2, 6, "white", "pawn"),
-         Piece(3, 6, "white", "pawn"),
-         Piece(4, 6, "white", "pawn"),
-         Piece(5, 6, "white", "pawn"),
-         Piece(6, 6, "white", "pawn"),
-         Piece(7, 6, "white", "pawn")
+         Rook(7, 0, "black"),
+         Rook(0, 0, "black"),
+         Knight(6, 0, "black"),
+         Knight(1, 0, "black"),
+         Bishop(2, 0, "black"),
+         Bishop(5, 0, "black"),
+         Queen(3, 0, "black"),
+         King(4, 0, "black"),
+         Pawn(0, 1, "black"),
+         Pawn(1, 1, "black"),
+         Pawn(2, 1, "black"),
+         Pawn(3, 1, "black"),
+         Pawn(4, 1, "black"),
+         Pawn(5, 1, "black"),
+         Pawn(6, 1, "black"),
+         Pawn(7, 1, "black"),
+         Rook(0, 7, "white"),
+         Rook(7, 7, "white"),
+         Knight(1, 7, "white"),
+         Knight(6, 7, "white"),
+         Bishop(2, 7, "white"),
+         Bishop(5, 7, "white"),
+         Queen(3, 7, "white"),
+         King(4, 7, "white"),
+         Pawn(0, 6, "white"),
+         Pawn(1, 6, "white"),
+         Pawn(2, 6, "white"),
+         Pawn(3, 6, "white"),
+         Pawn(4, 6, "white"),
+         Pawn(5, 6, "white"),
+         Pawn(6, 6, "white"),
+         Pawn(7, 6, "white")
     )
 
     while True:
