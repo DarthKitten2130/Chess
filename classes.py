@@ -6,9 +6,10 @@ class Tile(pg.sprite.Sprite):
         super().__init__()
         self.x = x
         self.y = y
-        self.color = lambda x, y: (255, 255, 255) if (x + y) % 2 == 0 else (51, 102, 0)
+        self.color = (255, 255, 255) if (x + y) % 2 == 0 else (51, 102, 0)
         self.rect = pg.Rect(x * self.tilesize, y * self.tilesize, self.tilesize, self.tilesize)
-
+        self.image = pg.Surface((self.tilesize, self.tilesize))
+        self.image.fill(self.color)
 
 
 class Piece(pg.sprite.Sprite):
@@ -22,6 +23,12 @@ class Piece(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x * 180
         self.rect.y = y * 180
+
+    def update(self, events):
+        for event in events:
+            if event.type == pg.MOUSEBUTTONUP:
+                if self.rect.collidepoint(event.pos):
+                    pass
 
     def kill(self,live_pieces,dead_pieces):
         dead_pieces.add(self)
@@ -43,21 +50,26 @@ class King(Piece):
     def promote(self):
         raise AttributeError("Cannot promote to a King")
 
+
 class Queen(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "queen")
+
 
 class Bishop(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "bishop")
 
+
 class Knight(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "knight")
 
+
 class Rook(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "rook")
+
 
 class Pawn(Piece):
     def __init__(self, x, y, color):

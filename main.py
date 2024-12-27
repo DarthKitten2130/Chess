@@ -68,6 +68,11 @@ def main():
     board = pg.sprite.Group()
     live_pieces = pg.sprite.Group()
     dead_pieces = pg.sprite.Group()
+
+    for i in range(8):
+        for j in range(8):
+            board.add(Tile(i,j))
+
     live_pieces.add(
          Rook(7, 0, "black"),
          Rook(0, 0, "black"),
@@ -110,11 +115,11 @@ def main():
                 quit()
 
         screen.fill((153, 102, 0))
-        board_init(screen,board_grid)
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
+        board.draw(screen)
         live_pieces.draw(screen)
-        play_turn(screen,chess_grid)
+        live_pieces.update(pg.event.get())
         pg.display.flip()
 
 if __name__ == '__main__':
