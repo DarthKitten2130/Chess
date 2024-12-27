@@ -1,6 +1,18 @@
 import pygame as pg
 
+class Tile(pg.sprite.Sprite):
+    tilesize = 180
+    def __init__(self, x, y):
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.color = lambda x, y: (255, 255, 255) if (x + y) % 2 == 0 else (51, 102, 0)
+        self.rect = pg.Rect(x * self.tilesize, y * self.tilesize, self.tilesize, self.tilesize)
+
+
+
 class Piece(pg.sprite.Sprite):
+    movable_tiles = []
     def __init__(self, x, y, color, type):
         super().__init__()
         self.x = x

@@ -1,12 +1,12 @@
 import pygame as pg
 from classes import *
 
+turn = 'white'
 def board_init(screen,grid):
-    tilesize = 180
+    tilesize = Tile.tilesize
     for x in range(8):
         for y in range(8):
-
-            rect = pg.Rect(x * tilesize, y * tilesize, tilesize, tilesize)
+            rect = Tile(x,y)
 
             if (x+y) % 2 == 0:
                 pg.draw.rect(screen, (255, 255, 255),rect)
@@ -16,21 +16,25 @@ def board_init(screen,grid):
 
 def play_turn(screen,grid):
     global turn
-    ltd = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
+    ltd = {'a': '0', 'b': '1', 'c': '2', 'd': '3', 'e': '4', 'f': '5', 'g': '6', 'h': '7'}
 
     print(f"Turn: {turn}\n")
     move = input("Enter your move: ").split()
 
     try:
-        move[0][0] = ltd[move[0][0].lower()]
-        move[1][0] = ltd[move[1][0].lower()]
-        start_square = move[0]
-        final_square = move[1]
+        start_square = ltd[move[0][0].lower()] + move[0][1]
+        final_square = ltd[move[1][0].lower()] + move[1][1]
     except KeyError:
          print("invalidInput")
     else:
-        piece = grid[int(start_square[0])][int(start_square[1])]
-        piece_2 = grid[int(final_square[0])][int(final_square[1])]
+        try:
+            piece = grid[int(start_square[0])][int(start_square[1])]
+        except KeyError:
+            piece = None
+        try:
+            piece_2 = grid[int(final_square[0])][int(final_square[1])]
+        except KeyError:
+            piece_2 = None
         if len(move) != 2 or int(start_square) > 77 or int(final_square) > 77:
            print("You have to enter two valid coordinates")
 
@@ -50,17 +54,18 @@ def play_turn(screen,grid):
                 piece_2.kill()
             piece.x = int(final_square[0])
             piece.y = int(final_square[1])
+            turn = "white" if turn == "black" else "black"
 
     
 
 
 def main():
     pg.init()
-
+    global turn
     screen = pg.display.set_mode((2460, 1600))
     chess_grid = [{},{},{},{},{},{},{},{}]
     board_grid = [{},{},{},{},{},{},{},{}]
-    turn = 'white'
+    board = pg.sprite.Group()
     live_pieces = pg.sprite.Group()
     dead_pieces = pg.sprite.Group()
     live_pieces.add(
@@ -109,6 +114,7 @@ def main():
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
         live_pieces.draw(screen)
+        play_turn(screen,chess_grid)
         pg.display.flip()
 
 if __name__ == '__main__':
