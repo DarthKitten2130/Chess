@@ -2,28 +2,13 @@ import pygame as pg
 from classes import *
 
 turn = 'white'
-def board_init(screen,grid):
-    tilesize = Tile.tilesize
-    for x in range(8):
-        for y in range(8):
-            rect = Tile(x,y)
 
-            if (x+y) % 2 == 0:
-                pg.draw.rect(screen, (255, 255, 255),rect)
-            elif (x+y) % 2 == 1:
-                pg.draw.rect(screen, (51, 102, 0), rect)
-            grid[x][y] = rect
-
-def play_turn(screen,grid):
+def play_turn(screen,grid,live_pieces):
     global turn
     ltd = {'a': '0', 'b': '1', 'c': '2', 'd': '3', 'e': '4', 'f': '5', 'g': '6', 'h': '7'}
 
-    print(f"Turn: {turn}\n")
-    move = input("Enter your move: ").split()
-
     try:
-        start_square = ltd[move[0][0].lower()] + move[0][1]
-        final_square = ltd[move[1][0].lower()] + move[1][1]
+        piece = live_pieces.update()
     except KeyError:
          print("invalidInput")
     else:
