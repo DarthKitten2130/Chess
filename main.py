@@ -1,68 +1,70 @@
 import pygame as pg
 from classes import *
 
-def board_init(screen,grid):
-    tilesize = 180
-    for x in range(8):
-        for y in range(8):
+turn = 'white'
 
-            rect = pg.Rect(x * tilesize, y * tilesize, tilesize, tilesize)
-
-            if (x+y) % 2 == 0:
-                pg.draw.rect(screen, (255, 255, 255),rect)
-            elif (x+y) % 2 == 1:
-                pg.draw.rect(screen, (51, 102, 0), rect)
-            grid[x][y] = rect
-
-def play_turn(screen,grid):
+def play_turn(screen,grid,live_pieces):
     global turn
-    ltd = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
-
-    print(f"Turn: {turn}\n")
-    move = input("Enter your move: ").split()
-
+    ltd = {'a': '0', 'b': '1', 'c': '2', 'd': '3', 'e': '4', 'f': '5', 'g': '6', 'h': '7'}
+'''
     try:
-        move[0][0] = ltd[move[0][0].lower()]
-        move[1][0] = ltd[move[1][0].lower()]
-        start_square = move[0]
-        final_square = move[1]
-    except KeyError:
-         print("invalidInput")
-    else:
         piece = grid[int(start_square[0])][int(start_square[1])]
+    except KeyError:
+        piece = None
+    try:
         piece_2 = grid[int(final_square[0])][int(final_square[1])]
-        if len(move) != 2 or int(start_square) > 77 or int(final_square) > 77:
-           print("You have to enter two valid coordinates")
-
-        elif piece is None:
-            print("No piece on that square")
-        elif piece_2 is not None:
-            if piece_2.color == turn:
-                print("You can't take your own piece!")
-            elif piece_2.type == "king":
-                print("You can't take the king!")
-
-        elif piece.color != turn:
-            print("That is not your piece!")
-
-        else:
-            if piece_2 is not None and piece_2.type != "king":
-                piece_2.kill()
-            piece.x = int(final_square[0])
-            piece.y = int(final_square[1])
-
+    except KeyError:
+        piece_2 = None
+    if len(move) != 2 or int(start_square) > 77 or int(final_square) > 77:
+       print("You have to enter two valid coordinates")
+    elif piece is None:
+        print("No piece on that square")
+    elif piece_2 is not None:
+        if piece_2.color == turn:
+            print("You can't take your own piece!")
+        elif piece_2.type == "king":
+            print("You can't take the king!")
+    elif piece.color != turn:
+        print("That is not your piece!")
+    else:
+        if piece_2 is not None and piece_2.type != "king":
+            piece_2.kill()
+        piece.x = int(final_square[0])
+        piece.y = int(final_square[1])
+        turn = "white" if turn == "black" else "black"
+'''
     
+def get_clicked_piece(live_pieces, mouse_pos):
+    for piece in live_pieces:
+        if piece.rect.collidepoint(mouse_pos):
+            return piece
+    return None
 
+def get_target(live_pieces,board,mouse_pos):
+    for piece in live_pieces:
+        if piece.rect.collidepoint(mouse_pos):
+            return piece
+    for tile in board:
+        if tile.rect.collidepoint(mouse_pos):
+            return tile
+    return None
 
 def main():
     pg.init()
-
-    screen = pg.display.set_mode((2460, 1600))
+    global turn
+    screen = pg.display.set_mode((1440, 1440))
     chess_grid = [{},{},{},{},{},{},{},{}]
     board_grid = [{},{},{},{},{},{},{},{}]
-    turn = 'white'
+    board = pg.sprite.Group()
     live_pieces = pg.sprite.Group()
     dead_pieces = pg.sprite.Group()
+    clicked_piece = None
+    target = None
+
+    for i in range(8):
+        for j in range(8):
+            board.add(Tile(i,j))
+
     live_pieces.add(
          Rook(7, 0, "black"),
          Rook(0, 0, "black"),
@@ -103,12 +105,34 @@ def main():
             if event.type == pg.QUIT:
                 pg.quit()
                 quit()
+            elif event.type == pg.MOUSEBUTTONUP:
+                mouse_pos = pg.mouse.get_pos()
+                if not clicked_piece:
+                    clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
+                else:
+                    target = get_target(live_pieces, board, mouse_pos)
+                    if isinstance(target, Tile):
+                        clicked_piece.x, clicked_piece.y = target.x, target.y
+                        clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
+                        chess_grid[target.x][target.y] = clicked_piece
+                        chess_grid[clicked_piece.x][clicked_piece.y] = None
+
+                    elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color:
+                        target.kill(live_pieces, dead_pieces)
+                        clicked_piece.x, clicked_piece.y = target.x, target.y
+                        clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
+                        chess_grid[target.x][target.y] = clicked_piece
+                        chess_grid[clicked_piece.x][clicked_piece.y] = None
+                    clicked_piece = None
+                    target = None
 
         screen.fill((153, 102, 0))
-        board_init(screen,board_grid)
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
+        board.draw(screen)
         live_pieces.draw(screen)
+        if clicked_piece:
+            clicked_piece.outline(screen)
         pg.display.flip()
 
 if __name__ == '__main__':
