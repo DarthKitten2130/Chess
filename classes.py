@@ -42,6 +42,20 @@ class King(Piece):
     def kill(self):
         raise AttributeError("Kings cannot be killed")
 
+    def legal_move(self,chess_grid):
+        lst = super().__getattribute__("movable_tiles")
+        for i in range(self.x-1,self.x+2):
+            for j in range(self.y-1,self.y+2):
+                if 0 <= i <= 7 and 0 <= j <= 7 and i != self.x and j != self.y:
+                    if chess_grid[i][j] and chess_grid[i][j].color != self.color:
+                            lst.append([i,j])
+                    else:
+                        lst.append([i,j])
+        return lst
+
+    def castle(self,target,chess_grid):
+        pass
+
 class Queen(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "queen")
@@ -60,6 +74,9 @@ class Knight(Piece):
 class Rook(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "rook")
+
+    def castle(self,target,chess_grid):
+        pass
 
 
 class Pawn(Piece):

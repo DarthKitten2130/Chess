@@ -6,33 +6,6 @@ turn = 'white'
 def play_turn(screen,grid,live_pieces):
     global turn
     ltd = {'a': '0', 'b': '1', 'c': '2', 'd': '3', 'e': '4', 'f': '5', 'g': '6', 'h': '7'}
-'''
-    try:
-        piece = grid[int(start_square[0])][int(start_square[1])]
-    except KeyError:
-        piece = None
-    try:
-        piece_2 = grid[int(final_square[0])][int(final_square[1])]
-    except KeyError:
-        piece_2 = None
-    if len(move) != 2 or int(start_square) > 77 or int(final_square) > 77:
-       print("You have to enter two valid coordinates")
-    elif piece is None:
-        print("No piece on that square")
-    elif piece_2 is not None:
-        if piece_2.color == turn:
-            print("You can't take your own piece!")
-        elif piece_2.type == "king":
-            print("You can't take the king!")
-    elif piece.color != turn:
-        print("That is not your piece!")
-    else:
-        if piece_2 is not None and piece_2.type != "king":
-            piece_2.kill()
-        piece.x = int(final_square[0])
-        piece.y = int(final_square[1])
-        turn = "white" if turn == "black" else "black"
-'''
     
 def get_clicked_piece(live_pieces, mouse_pos):
     for piece in live_pieces:
@@ -117,6 +90,9 @@ def main():
                         chess_grid[target.x][target.y] = clicked_piece
                         chess_grid[clicked_piece.x][clicked_piece.y] = None
 
+                    elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color:
+                        clicked_piece.castle(target, chess_grid)
+
                     elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color:
                         target.kill(live_pieces, dead_pieces)
                         clicked_piece.x, clicked_piece.y = target.x, target.y
@@ -126,7 +102,6 @@ def main():
                     clicked_piece = None
                     target = None
 
-        screen.fill((153, 102, 0))
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
         board.draw(screen)
