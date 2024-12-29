@@ -40,6 +40,15 @@ def get_clicked_piece(live_pieces, mouse_pos):
             return piece
     return None
 
+def get_target(live_pieces,board,mouse_pos):
+    for piece in live_pieces:
+        if piece.rect.collidepoint(mouse_pos):
+            return piece
+    for tile in board:
+        if tile.rect.collidepoint(mouse_pos):
+            return tile
+    return None
+
 def main():
     pg.init()
     global turn
@@ -50,6 +59,7 @@ def main():
     live_pieces = pg.sprite.Group()
     dead_pieces = pg.sprite.Group()
     clicked_piece = None
+    target = None
 
     for i in range(8):
         for j in range(8):
@@ -97,7 +107,24 @@ def main():
                 quit()
             elif event.type == pg.MOUSEBUTTONUP:
                 mouse_pos = pg.mouse.get_pos()
-                clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
+                if not clicked_piece:
+                    clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
+                else:
+                    target = get_target(live_pieces, board, mouse_pos)
+                    if isinstance(target, Tile):
+                        clicked_piece.x, clicked_piece.y = target.x, target.y
+                        clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
+                        chess_grid[target.x][target.y] = clicked_piece
+                        chess_grid[clicked_piece.x][clicked_piece.y] = None
+
+                    elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color:
+                        target.kill(live_pieces, dead_pieces)
+                        clicked_piece.x, clicked_piece.y = target.x, target.y
+                        clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
+                        chess_grid[target.x][target.y] = clicked_piece
+                        chess_grid[clicked_piece.x][clicked_piece.y] = None
+                    clicked_piece = None
+                    target = None
 
         screen.fill((153, 102, 0))
         for piece in live_pieces:

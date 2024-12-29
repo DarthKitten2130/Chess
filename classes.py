@@ -11,6 +11,9 @@ class Tile(pg.sprite.Sprite):
         self.image = pg.Surface((self.tilesize, self.tilesize))
         self.image.fill(self.color)
 
+    def outline(self,screen):
+        pg.draw.rect(screen, (0,0,255), self.rect, 5)
+
 
 class Piece(pg.sprite.Sprite):
     movable_tiles = []
@@ -23,9 +26,6 @@ class Piece(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x * 180
         self.rect.y = y * 180
-
-    def update(self, events):
-        pass
 
     def kill(self,live_pieces,dead_pieces):
         dead_pieces.add(self)
