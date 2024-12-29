@@ -179,15 +179,15 @@ class Pawn(Piece):
         lst = []
         if not self.moved:
             if self.color == 'white':
-                if not chess_grid[self.x][self.y+1]:
-                    lst.append([self.x,self.y+1])
-                if not chess_grid[self.x][self.y+2]:
-                    lst.append([self.x,self.y+2])
-            else:
                 if not chess_grid[self.x][self.y-1]:
                     lst.append([self.x,self.y-1])
                 if not chess_grid[self.x][self.y-2]:
                     lst.append([self.x,self.y-2])
+            else:
+                if not chess_grid[self.x][self.y+1]:
+                    lst.append([self.x,self.y+1])
+                if not chess_grid[self.x][self.y+2]:
+                    lst.append([self.x,self.y+2])
         else:
             if self.color == 'white':
                 if not chess_grid[self.x][self.y+1]:

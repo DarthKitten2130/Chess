@@ -82,9 +82,10 @@ def main():
                 mouse_pos = pg.mouse.get_pos()
                 if not clicked_piece:
                     clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
+                    clicked_piece.legal_move(chess_grid)
                 else:
                     target = get_target(live_pieces, board, mouse_pos)
-                    if isinstance(target, Tile):
+                    if isinstance(target, Tile) and [target.x, target.y] in clicked_piece.movable_tiles:
                         clicked_piece.x, clicked_piece.y = target.x, target.y
                         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
                         chess_grid[target.x][target.y] = clicked_piece
@@ -93,7 +94,7 @@ def main():
                     elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color:
                         clicked_piece.castle(target, chess_grid)
 
-                    elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color:
+                    elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and [target.x, target.y] in clicked_piece.movable_tiles:
                         target.kill(live_pieces, dead_pieces)
                         clicked_piece.x, clicked_piece.y = target.x, target.y
                         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
