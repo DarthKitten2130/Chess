@@ -23,7 +23,7 @@ class Piece(pg.sprite.Sprite):
         self.color = color
         self.image = pg.image.load(f"images/{color}/{color}_{type}.png")
         self.rect = pg.Rect(x * Tile.tilesize, y * Tile.tilesize, Tile.tilesize, Tile.tilesize)
-        self.movable_tiles = self.legal_move()
+        self.movable_tiles = []
         self.moved = False
 
     def kill(self,live_pieces,dead_pieces):
@@ -32,9 +32,6 @@ class Piece(pg.sprite.Sprite):
 
     def outline(self,screen):
         pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
-
-    def legal_move(self,chess_grid):
-        pass
 
 
 class King(Piece):
@@ -53,7 +50,7 @@ class King(Piece):
                             lst.append([i,j])
                     else:
                         lst.append([i,j])
-        return lst
+        self.movable_tiles = lst
 
     def castle(self,target,chess_grid):
         pass
@@ -99,7 +96,7 @@ class Rook(Piece):
             else:
                 lst.append([self.x,j])
 
-        return lst
+        self.movable_tiles = lst
 
 class Bishop(Piece):
     def __init__(self, x, y, color):
@@ -143,15 +140,19 @@ class Bishop(Piece):
                 else:
                     lst.append([self.x-i,self.y+i])
 
-        return lst
+        self.movable_tiles = lst
 
 class Queen(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "queen")
 
     def legal_move(self,chess_grid):
-
-
+        lst = []
+        b = Bishop(self.x,self.y,self.color)
+        r = Rook(self.x,self.y,self.color)
+        b.legal_move(chess_grid)
+        r.legal_move(chess_grid)
+        self.movable_tiles = b.movable_tiles + r.movable_tiles
 
 class Knight(Piece):
     def __init__(self, x, y, color):
