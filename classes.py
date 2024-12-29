@@ -25,19 +25,14 @@ class Piece(pg.sprite.Sprite):
         self.rect.y = y * 180
 
     def update(self, events):
-        for event in events:
-            if event.type == pg.MOUSEBUTTONUP:
-                if self.rect.collidepoint(event.pos):
-                    pass
+        pass
 
     def kill(self,live_pieces,dead_pieces):
         dead_pieces.add(self)
         live_pieces.remove(self)
 
-    def promote(self,live_pieces,piece):
-        live_pieces.remove(self)
-        live_pieces.add(piece.capitalize()(self,self.x,self.y,self.color))
-
+    def outline(self,screen):
+        pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
 
 
 class King(Piece):
@@ -46,10 +41,6 @@ class King(Piece):
 
     def kill(self):
         raise AttributeError("Kings cannot be killed")
-
-    def promote(self):
-        raise AttributeError("Cannot promote to a King")
-
 
 class Queen(Piece):
     def __init__(self, x, y, color):
@@ -74,3 +65,7 @@ class Rook(Piece):
 class Pawn(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "pawn")
+
+    def promote(self,live_pieces,piece):
+        live_pieces.remove(self)
+        live_pieces.add(piece.capitalize()(self,self.x,self.y,self.color))

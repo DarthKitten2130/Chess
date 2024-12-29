@@ -6,53 +6,50 @@ turn = 'white'
 def play_turn(screen,grid,live_pieces):
     global turn
     ltd = {'a': '0', 'b': '1', 'c': '2', 'd': '3', 'e': '4', 'f': '5', 'g': '6', 'h': '7'}
-
+'''
     try:
-        piece = live_pieces.update()
+        piece = grid[int(start_square[0])][int(start_square[1])]
     except KeyError:
-         print("invalidInput")
+        piece = None
+    try:
+        piece_2 = grid[int(final_square[0])][int(final_square[1])]
+    except KeyError:
+        piece_2 = None
+    if len(move) != 2 or int(start_square) > 77 or int(final_square) > 77:
+       print("You have to enter two valid coordinates")
+    elif piece is None:
+        print("No piece on that square")
+    elif piece_2 is not None:
+        if piece_2.color == turn:
+            print("You can't take your own piece!")
+        elif piece_2.type == "king":
+            print("You can't take the king!")
+    elif piece.color != turn:
+        print("That is not your piece!")
     else:
-        try:
-            piece = grid[int(start_square[0])][int(start_square[1])]
-        except KeyError:
-            piece = None
-        try:
-            piece_2 = grid[int(final_square[0])][int(final_square[1])]
-        except KeyError:
-            piece_2 = None
-        if len(move) != 2 or int(start_square) > 77 or int(final_square) > 77:
-           print("You have to enter two valid coordinates")
-
-        elif piece is None:
-            print("No piece on that square")
-        elif piece_2 is not None:
-            if piece_2.color == turn:
-                print("You can't take your own piece!")
-            elif piece_2.type == "king":
-                print("You can't take the king!")
-
-        elif piece.color != turn:
-            print("That is not your piece!")
-
-        else:
-            if piece_2 is not None and piece_2.type != "king":
-                piece_2.kill()
-            piece.x = int(final_square[0])
-            piece.y = int(final_square[1])
-            turn = "white" if turn == "black" else "black"
-
+        if piece_2 is not None and piece_2.type != "king":
+            piece_2.kill()
+        piece.x = int(final_square[0])
+        piece.y = int(final_square[1])
+        turn = "white" if turn == "black" else "black"
+'''
     
-
+def get_clicked_piece(live_pieces, mouse_pos):
+    for piece in live_pieces:
+        if piece.rect.collidepoint(mouse_pos):
+            return piece
+    return None
 
 def main():
     pg.init()
     global turn
-    screen = pg.display.set_mode((2460, 1600))
+    screen = pg.display.set_mode((1440, 1440))
     chess_grid = [{},{},{},{},{},{},{},{}]
     board_grid = [{},{},{},{},{},{},{},{}]
     board = pg.sprite.Group()
     live_pieces = pg.sprite.Group()
     dead_pieces = pg.sprite.Group()
+    clicked_piece = None
 
     for i in range(8):
         for j in range(8):
@@ -98,13 +95,17 @@ def main():
             if event.type == pg.QUIT:
                 pg.quit()
                 quit()
+            elif event.type == pg.MOUSEBUTTONUP:
+                mouse_pos = pg.mouse.get_pos()
+                clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
 
         screen.fill((153, 102, 0))
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
         board.draw(screen)
         live_pieces.draw(screen)
-        live_pieces.update(pg.event.get())
+        if clicked_piece:
+            clicked_piece.outline(screen)
         pg.display.flip()
 
 if __name__ == '__main__':
