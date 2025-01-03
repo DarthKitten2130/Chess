@@ -5,8 +5,7 @@ turn = 'white'
 
 def play_turn(screen,grid,live_pieces):
     global turn
-    ltd = {'a': '0', 'b': '1', 'c': '2', 'd': '3', 'e': '4', 'f': '5', 'g': '6', 'h': '7'}
-    
+
 def get_clicked_piece(live_pieces, mouse_pos):
     for piece in live_pieces:
         if piece.rect.collidepoint(mouse_pos):
@@ -26,8 +25,7 @@ def main():
     pg.init()
     global turn
     screen = pg.display.set_mode((1440, 1440))
-    chess_grid = [{},{},{},{},{},{},{},{}]
-    board_grid = [{},{},{},{},{},{},{},{}]
+    chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
     board = pg.sprite.Group()
     live_pieces = pg.sprite.Group()
     dead_pieces = pg.sprite.Group()
@@ -81,25 +79,31 @@ def main():
             elif event.type == pg.MOUSEBUTTONUP:
                 mouse_pos = pg.mouse.get_pos()
                 if not clicked_piece:
-                    clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
-                    clicked_piece.legal_move(chess_grid)
+                    try:
+                        clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
+                        clicked_piece.legal_move(chess_grid)
+                    except AttributeError:
+                        pass
                 else:
                     target = get_target(live_pieces, board, mouse_pos)
                     if isinstance(target, Tile) and [target.x, target.y] in clicked_piece.movable_tiles:
+                        chess_grid[clicked_piece.x][clicked_piece.y] = None
                         clicked_piece.x, clicked_piece.y = target.x, target.y
                         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
                         chess_grid[target.x][target.y] = clicked_piece
-                        chess_grid[clicked_piece.x][clicked_piece.y] = None
+                        clicked_piece.movable_tiles.clear()
 
                     elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color:
                         clicked_piece.castle(target, chess_grid)
+                        clicked_piece.movable_tiles.clear()
 
                     elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and [target.x, target.y] in clicked_piece.movable_tiles:
                         target.kill(live_pieces, dead_pieces)
+                        chess_grid[clicked_piece.x][clicked_piece.y] = None
                         clicked_piece.x, clicked_piece.y = target.x, target.y
                         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
                         chess_grid[target.x][target.y] = clicked_piece
-                        chess_grid[clicked_piece.x][clicked_piece.y] = None
+                        clicked_piece.movable_tiles.clear()
                     clicked_piece = None
                     target = None
 

@@ -11,8 +11,6 @@ class Tile(pg.sprite.Sprite):
         self.image = pg.Surface((self.tilesize, self.tilesize))
         self.image.fill(self.color)
 
-    def outline(self,screen):
-        pg.draw.rect(screen, (0,0,255), self.rect, 5)
 
 
 class Piece(pg.sprite.Sprite):
@@ -41,15 +39,17 @@ class King(Piece):
     def kill(self):
         raise AttributeError("Kings cannot be killed")
 
-    def legal_move(self,chess_grid):
+    def legal_move(self, chess_grid):
         lst = []
-        for i in range(self.x-1,self.x+2):
-            for j in range(self.y-1,self.y+2):
-                if 0 <= i <= 7 and 0 <= j <= 7 and i != self.x and j != self.y:
+        for i in range(self.x - 1, self.x + 2):
+            for j in range(self.y - 1, self.y + 2):
+                if 0 <= i <= 7 and 0 <= j <= 7 and (i, j) != (self.x, self.y):
                     if chess_grid[i][j] and chess_grid[i][j].color != self.color:
-                            lst.append([i,j])
-                    else:
-                        lst.append([i,j])
+                        lst.append([i, j])
+                    elif not chess_grid[i][j]:
+                        lst.append([i, j])
+        self.movable_tiles = lst
+
         self.movable_tiles = lst
 
     def castle(self,target,chess_grid):
@@ -177,36 +177,39 @@ class Pawn(Piece):
 
     def legal_move(self,chess_grid):
         lst = []
-        if not self.moved:
-            if self.color == 'white':
-                if not chess_grid[self.x][self.y-1]:
-                    lst.append([self.x,self.y-1])
-                if not chess_grid[self.x][self.y-2]:
-                    lst.append([self.x,self.y-2])
+        try:
+            if not self.moved:
+                if self.color == 'white':
+                    if not chess_grid[self.x][self.y-1]:
+                        lst.append([self.x,self.y-1])
+                    if not chess_grid[self.x][self.y-2]:
+                        lst.append([self.x,self.y-2])
+                else:
+                    if not chess_grid[self.x][self.y+1]:
+                        lst.append([self.x,self.y+1])
+                    if not chess_grid[self.x][self.y+2]:
+                        lst.append([self.x,self.y+2])
+                self.moved = True
             else:
-                if not chess_grid[self.x][self.y+1]:
-                    lst.append([self.x,self.y+1])
-                if not chess_grid[self.x][self.y+2]:
-                    lst.append([self.x,self.y+2])
-        else:
+                if self.color == 'white':
+                    if not chess_grid[self.x][self.y+1]:
+                        lst.append([self.x,self.y+1])
+                else:
+                    if not chess_grid[self.x][self.y-1]:
+                        lst.append([self.x,self.y-1])
+
             if self.color == 'white':
-                if not chess_grid[self.x][self.y+1]:
-                    lst.append([self.x,self.y+1])
+                if chess_grid[self.x+1][self.y+1] and chess_grid[self.x+1][self.y+1].color != self.color:
+                    lst.append([self.x+1,self.y+1])
+                if chess_grid[self.x-1][self.y+1] and chess_grid[self.x-1][self.y+1].color != self.color:
+                    lst.append([self.x-1,self.y+1])
             else:
-                if not chess_grid[self.x][self.y-1]:
-                    lst.append([self.x,self.y-1])
-
-        if self.color == 'white':
-            if chess_grid[self.x+1][self.y+1] and chess_grid[self.x+1][self.y+1].color != self.color:
-                lst.append([self.x+1,self.y+1])
-            if chess_grid[self.x-1][self.y+1] and chess_grid[self.x-1][self.y+1].color != self.color:
-                lst.append([self.x-1,self.y+1])
-        else:
-            if chess_grid[self.x+1][self.y-1] and chess_grid[self.x+1][self.y-1].color != self.color:
-                lst.append([self.x+1,self.y-1])
-            if chess_grid[self.x-1][self.y-1] and chess_grid[self.x-1][self.y-1].color != self.color:
-                lst.append([self.x-1,self.y-1])
-
+                if chess_grid[self.x+1][self.y-1] and chess_grid[self.x+1][self.y-1].color != self.color:
+                    lst.append([self.x+1,self.y-1])
+                if chess_grid[self.x-1][self.y-1] and chess_grid[self.x-1][self.y-1].color != self.color:
+                    lst.append([self.x-1,self.y-1])
+        except KeyError:
+            pass
         self.movable_tiles = lst
 
     def promote(self,live_pieces,piece):
