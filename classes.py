@@ -64,7 +64,7 @@ class Rook(Piece):
 
     def legal_move(self,chess_grid):
         lst = []
-        for i in range(self.y,8):
+        for i in range(self.x+1,8):
             if chess_grid[i][self.y]:
                 if chess_grid[i][self.y].color != self.color:
                     lst.append([i,self.y])
@@ -72,7 +72,7 @@ class Rook(Piece):
             else:
                 lst.append([i,self.y])
 
-        for i in range(self.y,0,-1):
+        for i in range(self.x-1,-1,-1):
             if chess_grid[i][self.y]:
                 if chess_grid[i][self.y].color != self.color:
                     lst.append([i, self.y])
@@ -80,7 +80,7 @@ class Rook(Piece):
             else:
                 lst.append([i,self.y])
 
-        for j in range(self.x,8):
+        for j in range(self.y+1,8):
             if chess_grid[self.x][j]:
                 if chess_grid[self.x][j].color != self.color:
                     lst.append([self.x,j])
@@ -88,7 +88,7 @@ class Rook(Piece):
             else:
                 lst.append([self.x,j])
 
-        for j in range(self.x,0,-1):
+        for j in range(self.y-1,-1,-1):
             if chess_grid[self.x][j]:
                 if chess_grid[self.x][j].color != self.color:
                     lst.append([self.x,j])
