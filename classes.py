@@ -192,22 +192,22 @@ class Pawn(Piece):
                 self.moved = True
             else:
                 if self.color == 'white':
-                    if not chess_grid[self.x][self.y+1]:
-                        lst.append([self.x,self.y+1])
-                else:
                     if not chess_grid[self.x][self.y-1]:
                         lst.append([self.x,self.y-1])
+                else:
+                    if not chess_grid[self.x][self.y+1]:
+                        lst.append([self.x,self.y+1])
 
             if self.color == 'white':
-                if chess_grid[self.x+1][self.y+1] and chess_grid[self.x+1][self.y+1].color != self.color:
-                    lst.append([self.x+1,self.y+1])
-                if chess_grid[self.x-1][self.y+1] and chess_grid[self.x-1][self.y+1].color != self.color:
-                    lst.append([self.x-1,self.y+1])
-            else:
                 if chess_grid[self.x+1][self.y-1] and chess_grid[self.x+1][self.y-1].color != self.color:
                     lst.append([self.x+1,self.y-1])
                 if chess_grid[self.x-1][self.y-1] and chess_grid[self.x-1][self.y-1].color != self.color:
                     lst.append([self.x-1,self.y-1])
+            else:
+                if chess_grid[self.x+1][self.y+1] and chess_grid[self.x+1][self.y+1].color != self.color:
+                    lst.append([self.x+1,self.y+1])
+                if chess_grid[self.x-1][self.y+1] and chess_grid[self.x-1][self.y+1].color != self.color:
+                    lst.append([self.x-1,self.y+1])
         except KeyError:
             pass
         self.movable_tiles = lst
