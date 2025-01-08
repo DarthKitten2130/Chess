@@ -163,12 +163,11 @@ class Knight(Piece):
         for i in range(-2,3):
             for j in range(-2,3):
                 if abs(i) + abs(j) == 3:
-                    if 0 <= self.x+i <= 7 and 0 <= self.y+j <= 7 and self.x != i and self.y != j:
-                        if chess_grid[self.x+i][self.y+j]:
-                            if chess_grid[self.x+i][self.y+j].color != self.color:
-                                lst.append([self.x+i,self.y+j])
-                        else:
+                    if 0 <= self.x+i <= 7 and 0 <= self.y+j <= 7:
+                        if chess_grid[self.x+i][self.y+j] and chess_grid[self.x+i][self.y+j].color != self.color:
                             lst.append([self.x+i,self.y+j])
+
+                        lst.append([self.x+i,self.y+j])
         self.movable_tiles = lst
 
 class Pawn(Piece):
