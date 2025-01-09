@@ -102,44 +102,20 @@ class Bishop(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "bishop")
 
-    def legal_move(self,chess_grid):
+    def legal_move(self, chess_grid):
         lst = []
-        for i in range(8):
-            if 0 <= self.x+i <= 7 and 0 <= self.y+i <= 7 and i != self.x and i != self.y:
-                if chess_grid[self.x+i][self.y+i]:
-                    if chess_grid[self.x+i][self.y+i].color != self.color:
-                        lst.append([self.x+i,self.y+i])
+        directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+        for dx, dy in directions:
+            i, j = self.x + dx, self.y + dy
+            while 0 <= i <= 7 and 0 <= j <= 7:
+                if chess_grid[i][j]:
+                    if chess_grid[i][j].color != self.color:
+                        lst.append([i, j])
                     break
                 else:
-                    lst.append([self.x+i,self.y+i])
-
-        for i in range(8):
-            if 0 <= self.x-i <= 7 and 0 <= self.y-i <= 7 and i != self.x and i != self.y:
-                if chess_grid[self.x-i][self.y-i]:
-                    if chess_grid[self.x-i][self.y-i].color != self.color:
-                        lst.append([self.x-i,self.y-i])
-                    break
-                else:
-                    lst.append([self.x-i,self.y-i])
-
-        for i in range(8):
-            if 0 <= self.x+i <= 7 and 0 <= self.y-i <= 7 and i != self.x and i != self.y:
-                if chess_grid[self.x+i][self.y-i]:
-                    if chess_grid[self.x+i][self.y-i].color != self.color:
-                        lst.append([self.x+i,self.y-i])
-                    break
-                else:
-                    lst.append([self.x+i,self.y-i])
-
-        for i in range(8):
-            if 0 <= self.x-i <= 7 and 0 <= self.y+i <= 7 and i != self.x and i != self.y:
-                if chess_grid[self.x-i][self.y+i]:
-                    if chess_grid[self.x-i][self.y+i].color != self.color:
-                        lst.append([self.x-i,self.y+i])
-                    break
-                else:
-                    lst.append([self.x-i,self.y+i])
-
+                    lst.append([i, j])
+                i += dx
+                j += dy
         self.movable_tiles = lst
 
 class Queen(Piece):
