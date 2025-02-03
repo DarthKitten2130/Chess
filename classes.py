@@ -50,17 +50,72 @@ class King(Piece):
                         lst.append([i, j])
         self.movable_tiles = lst
 
-        self.movable_tiles = lst
+    def castle(self, target, chess_grid):
+        if self.moved or target.moved:
+            return
 
-    def castle(self,target,chess_grid):
-        pass
+        if self.color == "white":
+            row = 7
+        else:
+            row = 0
+
+        if target.x == 7:
+            path = [5, 6]
+            king_new_pos, rook_new_pos = (6, row), (5, row)
+        elif target.x == 0:
+            path = [1, 2, 3]
+            king_new_pos, rook_new_pos = (2, row), (3, row)
+        else:
+            return
+
+        for x in path:
+            if chess_grid[x][row]:
+                return
+
+        chess_grid[self.x][self.y] = None
+        chess_grid[target.x][target.y] = None
+        self.x, self.y = king_new_pos
+        target.x, target.y = rook_new_pos
+        self.rect.topleft = (king_new_pos[0] * Tile.tilesize, king_new_pos[1] * Tile.tilesize)
+        target.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
+        chess_grid[self.x][self.y] = self
+        chess_grid[target.x][target.y] = target
+
 
 class Rook(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "rook")
 
-    def castle(self,target,chess_grid):
-        pass
+    def castle(self, target, chess_grid):
+        if self.moved or target.moved:
+            return
+
+        if self.color == "white":
+            row = 7
+        else:
+            row = 0
+
+        if self.x == 7:
+            path = [5, 6]
+            king_new_pos, rook_new_pos = (6, row), (5, row)
+        elif self.x == 0:
+            path = [1, 2, 3]
+            king_new_pos, rook_new_pos = (2, row), (3, row)
+        else:
+            return
+
+        for x in path:
+            if chess_grid[x][row]:
+                return
+
+        chess_grid[self.x][self.y] = None
+        chess_grid[target.x][target.y] = None
+        self.x, self.y = rook_new_pos
+        target.x, target.y = king_new_pos
+        self.rect.topleft = (rook_new_pos[0] * Tile.tilesize, rook_new_pos[1] * Tile.tilesize)
+        target.rect.topleft =  (target.x * Tile.tilesize, target.y * Tile.tilesize)
+        chess_grid[self.x][self.y] = self
+        chess_grid[target.x][target.y] = target
 
     def legal_move(self,chess_grid):
         lst = []

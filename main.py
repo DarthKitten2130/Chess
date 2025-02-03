@@ -1,11 +1,6 @@
 import pygame as pg
 from classes import *
 
-turn = 'white'
-
-def play_turn(screen,grid,live_pieces):
-    global turn
-
 def get_clicked_piece(live_pieces, mouse_pos):
     for piece in live_pieces:
         if piece.rect.collidepoint(mouse_pos):
@@ -23,7 +18,6 @@ def get_target(live_pieces,board,mouse_pos):
 
 def main():
     pg.init()
-    global turn
     screen = pg.display.set_mode((1440, 1440))
     chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
     board = pg.sprite.Group()
@@ -31,6 +25,7 @@ def main():
     dead_pieces = pg.sprite.Group()
     clicked_piece = None
     target = None
+    turn = "white"
 
     for i in range(8):
         for j in range(8):
