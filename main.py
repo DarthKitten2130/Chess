@@ -99,6 +99,9 @@ def main():
                         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
                         chess_grid[target.x][target.y] = clicked_piece
                         clicked_piece.movable_tiles.clear()
+
+                    elif isinstance(clicked_piece,Pawn) and clicked_piece.y in [0,7]:
+                        promote(clicked_piece,chess_grid,screen,live_pieces,dead_pieces,turn)
                     clicked_piece = None
                     target = None
 

@@ -11,8 +11,6 @@ class Tile(pg.sprite.Sprite):
         self.image = pg.Surface((self.tilesize, self.tilesize))
         self.image.fill(self.color)
 
-
-
 class Piece(pg.sprite.Sprite):
     def __init__(self, x, y, color, type):
         super().__init__()
@@ -242,6 +240,41 @@ class Pawn(Piece):
             pass
         self.movable_tiles = lst
 
-    def promote(self,live_pieces,piece):
-        live_pieces.remove(self)
-        live_pieces.add(piece.capitalize()(self,self.x,self.y,self.color))
+
+
+def promote(self,board,screen,live_pieces,dead_pieces,turn):
+
+    popup = True
+    selected = None
+
+    pieces = []
+    while popup:
+        promos = pg.sprite.Group()
+        promos.add(
+            Queen(2,3,turn),
+            Bishop(3,3,turn),
+            Knight(4,3,turn),
+            Rook(5,3,turn))
+
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                quit()
+            elif event.type == pg.MOUSEBUTTONUP:
+                mouse_pos = pg.mouse.get_pos()
+                for piece in promos:
+                    if piece.rect.collidepoint(mouse_pos):
+                        selected = type(piece).__name__
+                        popup = False
+                        promos.empty()
+                        break
+        pieces = {"Queen":Queen,"Bishop":Bishop,"Knight":Knight,"Rook":Rook}
+        screen.fill((255, 87, 51))
+        promos.draw(screen)
+        pg.display.flip()
+
+    self.kill(live_pieces,dead_pieces)
+    self = pieces[selected](self.x,self.y,turn)
+    live_pieces.add(self)
+    self.movable_tiles.clear()
