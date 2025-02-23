@@ -86,6 +86,8 @@ def main():
                         clicked_piece.x, clicked_piece.y = target.x, target.y
                         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
                         chess_grid[target.x][target.y] = clicked_piece
+                        if isinstance(clicked_piece, Pawn) and clicked_piece.y in [0, 7]:
+                            promote(clicked_piece, chess_grid, screen, live_pieces, dead_pieces, turn)
                         clicked_piece.movable_tiles.clear()
 
                     elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color:
@@ -98,10 +100,9 @@ def main():
                         clicked_piece.x, clicked_piece.y = target.x, target.y
                         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
                         chess_grid[target.x][target.y] = clicked_piece
+                        if isinstance(clicked_piece, Pawn) and clicked_piece.y in [0, 7]:
+                            promote(clicked_piece, chess_grid, screen, live_pieces, dead_pieces, turn)
                         clicked_piece.movable_tiles.clear()
-
-                    elif isinstance(clicked_piece,Pawn) and clicked_piece.y in [0,7]:
-                        promote(clicked_piece,chess_grid,screen,live_pieces,dead_pieces,turn)
                     clicked_piece = None
                     target = None
 

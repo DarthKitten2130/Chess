@@ -277,4 +277,3 @@ def promote(self,board,screen,live_pieces,dead_pieces,turn):
     self.kill(live_pieces,dead_pieces)
     self = pieces[selected](self.x,self.y,turn)
     live_pieces.add(self)
-    self.movable_tiles.clear()
