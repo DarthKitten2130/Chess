@@ -73,26 +73,55 @@ def main():
          Pawn(7, 6, "white")
     )
 
-    def check():
-        global turn, live_pieces,chess_grid
+    def check(turn, live_pieces,chess_grid):
+
         lst = [piece for piece in live_pieces if piece.color == turn]
         for piece in lst:
             piece.legal_move(chess_grid)
 
         king = [piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn][0]
-        if [king.x, king.y] in reduce(lambda x, y: x.movable_tiles | y.movable_tiles, lst):
-            checked = True
+        if (king.x, king.y) in reduce(lambda x, y: x | y.movable_tiles, lst,set()):
+            return True
         else:
-            checked = False
+            return False
 
-    def move():
-        global clicked_piece, target, turn, moved,chess_grid,screen,live_pieces,dead_pieces
+    def checkmate(turn):
+        if turn == "white":
+            print("Black wins")
+        else:
+            print("White wins")
+        pg.quit()
+        quit()
+
+
+    def check_moves(turn,live_pieces,chess_grid):
+        lst = [piece for piece in live_pieces if piece.color == turn]
+        mt = set()
+        for piece in lst:
+            piece.legal_move(chess_grid)
+
+            for coord in piece.movable_tiles:
+                ngw = chess_grid
+                ngw[piece.x][piece.y] = None
+                ngw[coord[0]][coord[1]] = piece
+                if check(turn,live_pieces,ngw):
+                    mt.add(coord)
+
+        if len(mt) == 0:
+            checkmate(turn)
+            return None
+        else:
+            return mt
+
+
+
+    def move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces):
 
         chess_grid[clicked_piece.x][clicked_piece.y] = None
         clicked_piece.x, clicked_piece.y = target.x, target.y
         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
         chess_grid[target.x][target.y] = clicked_piece
-        if isinstance(clicked_piece, Pawn) and clicked_piece.y in [0, 7]:
+        if isinstance(clicked_piece, Pawn) and clicked_piece.y in (0, 7):
             promote(clicked_piece, chess_grid, screen, live_pieces, dead_pieces, turn)
         clicked_piece.movable_tiles.clear()
 
@@ -118,17 +147,17 @@ def main():
                 else:
                     if clicked_piece.color == turn:
                         target = get_target(live_pieces, board, mouse_pos)
-                        if isinstance(target, Tile) and [target.x, target.y] in clicked_piece.movable_tiles and [target.x,target.y] != [clicked_piece.x,clicked_piece.y]:
-                            moved = move()
+                        if isinstance(target, Tile) and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
+                            moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
-                        elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and [target.x,target.y] != [clicked_piece.x,clicked_piece.y]:
+                        elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
                             clicked_piece.castle(target, chess_grid)
                             clicked_piece.movable_tiles.clear()
                             moved = True
 
-                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and [target.x, target.y] in clicked_piece.movable_tiles and [target.x,target.y] != [clicked_piece.x,clicked_piece.y]:
+                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
                             target.kill(live_pieces, dead_pieces)
-                            moved = move()
+                            moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
                         clicked_piece = None
                         target = None
@@ -143,7 +172,7 @@ def main():
                         clicked_piece = None
                         target = None
                         continue
-        print(check())
+
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
         board.draw(screen)

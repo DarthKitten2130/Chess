@@ -38,14 +38,14 @@ class King(Piece):
         raise AttributeError("Kings cannot be killed")
 
     def legal_move(self, chess_grid):
-        lst = []
+        lst = set()
         for i in range(self.x - 1, self.x + 2):
             for j in range(self.y - 1, self.y + 2):
                 if 0 <= i <= 7 and 0 <= j <= 7 and (i, j) != (self.x, self.y):
                     if chess_grid[i][j] and chess_grid[i][j].color != self.color:
-                        lst.append([i, j])
+                        lst.add((i, j))
                     elif not chess_grid[i][j]:
-                        lst.append([i, j])
+                        lst.add((i, j))
         self.movable_tiles = lst
 
     def castle(self, target, chess_grid):
@@ -116,38 +116,38 @@ class Rook(Piece):
         chess_grid[target.x][target.y] = target
 
     def legal_move(self,chess_grid):
-        lst = []
+        lst = set()
         for i in range(self.x+1,8):
             if chess_grid[i][self.y]:
                 if chess_grid[i][self.y].color != self.color:
-                    lst.append([i,self.y])
+                    lst.add((i,self.y))
                 break
             else:
-                lst.append([i,self.y])
+                lst.add((i,self.y))
 
         for i in range(self.x-1,-1,-1):
             if chess_grid[i][self.y]:
                 if chess_grid[i][self.y].color != self.color:
-                    lst.append([i, self.y])
+                    lst.add((i, self.y))
                 break
             else:
-                lst.append([i,self.y])
+                lst.add((i,self.y))
 
         for j in range(self.y+1,8):
             if chess_grid[self.x][j]:
                 if chess_grid[self.x][j].color != self.color:
-                    lst.append([self.x,j])
+                    lst.add((self.x,j))
                 break
             else:
-                lst.append([self.x,j])
+                lst.add((self.x,j))
 
         for j in range(self.y-1,-1,-1):
             if chess_grid[self.x][j]:
                 if chess_grid[self.x][j].color != self.color:
-                    lst.append([self.x,j])
+                    lst.add((self.x,j))
                 break
             else:
-                lst.append([self.x,j])
+                lst.add((self.x,j))
 
         self.movable_tiles = lst
 
@@ -156,17 +156,17 @@ class Bishop(Piece):
         super().__init__(x, y, color, "bishop")
 
     def legal_move(self, chess_grid):
-        lst = []
+        lst = set()
         directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
         for dx, dy in directions:
             i, j = self.x + dx, self.y + dy
             while 0 <= i <= 7 and 0 <= j <= 7:
                 if chess_grid[i][j]:
                     if chess_grid[i][j].color != self.color:
-                        lst.append([i, j])
+                        lst.add((i, j))
                     break
                 else:
-                    lst.append([i, j])
+                    lst.add((i, j))
                 i += dx
                 j += dy
         self.movable_tiles = lst
@@ -176,27 +176,27 @@ class Queen(Piece):
         super().__init__(x, y, color, "queen")
 
     def legal_move(self,chess_grid):
-        lst = []
+        lst = set()
         b = Bishop(self.x,self.y,self.color)
         r = Rook(self.x,self.y,self.color)
         b.legal_move(chess_grid)
         r.legal_move(chess_grid)
-        self.movable_tiles = b.movable_tiles + r.movable_tiles
+        self.movable_tiles = b.movable_tiles | r.movable_tiles
 
 class Knight(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "knight")
 
     def legal_move(self,chess_grid):
-        lst = []
+        lst = set()
         for i in range(-2,3):
             for j in range(-2,3):
                 if abs(i) + abs(j) == 3:
                     if 0 <= self.x+i <= 7 and 0 <= self.y+j <= 7:
                         if chess_grid[self.x+i][self.y+j] and chess_grid[self.x+i][self.y+j].color != self.color:
-                            lst.append([self.x+i,self.y+j])
+                            lst.add((self.x+i,self.y+j))
 
-                        lst.append([self.x+i,self.y+j])
+                        lst.add((self.x+i,self.y+j))
         self.movable_tiles = lst
 
 class Pawn(Piece):
@@ -204,38 +204,38 @@ class Pawn(Piece):
         super().__init__(x, y, color, "pawn")
 
     def legal_move(self,chess_grid):
-        lst = []
+        lst = set()
         try:
             if not self.moved:
                 if self.color == 'white':
                     if not chess_grid[self.x][self.y-1]:
-                        lst.append([self.x,self.y-1])
+                        lst.add((self.x,self.y-1))
                     if not chess_grid[self.x][self.y-2]:
-                        lst.append([self.x,self.y-2])
+                        lst.add((self.x,self.y-2))
                 else:
                     if not chess_grid[self.x][self.y+1]:
-                        lst.append([self.x,self.y+1])
+                        lst.add((self.x,self.y+1))
                     if not chess_grid[self.x][self.y+2]:
-                        lst.append([self.x,self.y+2])
+                        lst.add((self.x,self.y+2))
                 self.moved = True
             else:
                 if self.color == 'white':
                     if not chess_grid[self.x][self.y-1]:
-                        lst.append([self.x,self.y-1])
+                        lst.add((self.x,self.y-1))
                 else:
                     if not chess_grid[self.x][self.y+1]:
-                        lst.append([self.x,self.y+1])
+                        lst.add((self.x,self.y+1))
 
             if self.color == 'white':
                 if chess_grid[self.x+1][self.y-1] and chess_grid[self.x+1][self.y-1].color != self.color:
-                    lst.append([self.x+1,self.y-1])
+                    lst.add((self.x+1,self.y-1))
                 if chess_grid[self.x-1][self.y-1] and chess_grid[self.x-1][self.y-1].color != self.color:
-                    lst.append([self.x-1,self.y-1])
+                    lst.add((self.x-1,self.y-1))
             else:
                 if chess_grid[self.x+1][self.y+1] and chess_grid[self.x+1][self.y+1].color != self.color:
-                    lst.append([self.x+1,self.y+1])
+                    lst.add((self.x+1,self.y+1))
                 if chess_grid[self.x-1][self.y+1] and chess_grid[self.x-1][self.y+1].color != self.color:
-                    lst.append([self.x-1,self.y+1])
+                    lst.add((self.x-1,self.y+1))
         except KeyError:
             pass
         self.movable_tiles = lst
