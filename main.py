@@ -18,6 +18,7 @@ def get_target(live_pieces,board,mouse_pos):
     return None
 
 screen = pg.display.set_mode((1440, 1440))
+pg.display.set_caption('Chess')
 chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
 board = pg.sprite.Group()
 live_pieces = pg.sprite.Group()
@@ -31,7 +32,8 @@ checked = False
 def main():
     global clicked_piece, target, turn, moved, chess_grid, screen, live_pieces, dead_pieces,checked
     pg.init()
-
+    pg.font.init()
+    font = pg.font.Font('Oswald-Regular.ttf', 32)
     for i in range(8):
         for j in range(8):
             board.add(Tile(i,j))
@@ -73,12 +75,12 @@ def main():
 
     def check():
         global turn, live_pieces,chess_grid
-        lst = [piece.movable_tiles for piece in live_pieces if piece.color == turn]
+        lst = [piece for piece in live_pieces if piece.color == turn]
         for piece in lst:
             piece.legal_move(chess_grid)
 
         king = [piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn][0]
-        if [king.x, king.y] in reduce(lambda x, y: x | y, lst):
+        if [king.x, king.y] in reduce(lambda x, y: x.movable_tiles | y.movable_tiles, lst):
             checked = True
         else:
             checked = False
@@ -99,6 +101,8 @@ def main():
 
 
     while True:
+        text = font.render(turn, True, (255, 0, 0))
+        trect = text.get_rect()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -128,22 +132,25 @@ def main():
 
                         clicked_piece = None
                         target = None
-                        if turn == "white" and moved is True:
-                            turn = "black"
-                        elif turn == "black" and moved is True:
-                            turn = "white"
+                        if moved:
+                            if turn == "white":
+                                turn = "black"
+                            else:
+                                turn = "white"
+                            moved = False
+
                     else:
                         clicked_piece = None
                         target = None
                         continue
-
+        print(check())
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
         board.draw(screen)
         live_pieces.draw(screen)
         if clicked_piece:
             clicked_piece.outline(screen)
-
+        screen.blit(text, trect)
 
         pg.display.flip()
 
