@@ -217,7 +217,6 @@ class Pawn(Piece):
                         lst.add((self.x,self.y+1))
                     if not chess_grid[self.x][self.y+2]:
                         lst.add((self.x,self.y+2))
-                self.moved = True
             else:
                 if self.color == 'white':
                     if not chess_grid[self.x][self.y-1]:

@@ -81,6 +81,7 @@ def main():
 
         king = [piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn][0]
         if (king.x, king.y) in reduce(lambda x, y: x | y.movable_tiles, lst,set()):
+            print("Check")
             return True
         else:
             return False
@@ -104,7 +105,7 @@ def main():
                 ngw = chess_grid
                 ngw[piece.x][piece.y] = None
                 ngw[coord[0]][coord[1]] = piece
-                if check(turn,live_pieces,ngw):
+                if not check(turn,live_pieces,ngw):
                     mt.add(coord)
 
         if len(mt) == 0:
@@ -116,7 +117,7 @@ def main():
 
 
     def move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces):
-
+        global checked
         chess_grid[clicked_piece.x][clicked_piece.y] = None
         clicked_piece.x, clicked_piece.y = target.x, target.y
         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
@@ -124,6 +125,9 @@ def main():
         if isinstance(clicked_piece, Pawn) and clicked_piece.y in (0, 7):
             promote(clicked_piece, chess_grid, screen, live_pieces, dead_pieces, turn)
         clicked_piece.movable_tiles.clear()
+        if not clicked_piece.moved:
+            clicked_piece.moved = True
+        checked = check(turn,live_pieces,chess_grid)
 
         return True
 
@@ -138,6 +142,10 @@ def main():
                 quit()
             elif event.type == pg.MOUSEBUTTONUP:
                 mouse_pos = pg.mouse.get_pos()
+                if checked:
+                    mt = check_moves(turn,live_pieces,chess_grid)
+                else:
+                    mt = set()
                 if not clicked_piece:
                     try:
                         clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
