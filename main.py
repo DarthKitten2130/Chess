@@ -1,36 +1,21 @@
 import pygame as pg
 from classes import *
-from functools import reduce
 
-def get_clicked_piece(live_pieces, mouse_pos):
-    for piece in live_pieces:
-        if piece.rect.collidepoint(mouse_pos):
-            return piece
-    return None
 
-def get_target(live_pieces,board,mouse_pos):
-    for piece in live_pieces:
-        if piece.rect.collidepoint(mouse_pos):
-            return piece
-    for tile in board:
-        if tile.rect.collidepoint(mouse_pos):
-            return tile
-    return None
-
-screen = pg.display.set_mode((1440, 1440))
-pg.display.set_caption('Chess')
-chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
-board = pg.sprite.Group()
-live_pieces = pg.sprite.Group()
-dead_pieces = pg.sprite.Group()
-clicked_piece = None
-target = None
-turn = "white"
-moved = False
-checked = False
 
 def main():
-    global clicked_piece, target, turn, moved, chess_grid, screen, live_pieces, dead_pieces,checked
+    screen = pg.display.set_mode((1440, 1440))
+    pg.display.set_caption('Chess')
+    chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
+    board = pg.sprite.Group()
+    live_pieces = pg.sprite.Group()
+    dead_pieces = pg.sprite.Group()
+    clicked_piece = None
+    target = None
+    turn = "white"
+    moved = False
+    checked = False
+
     pg.init()
     pg.font.init()
     font = pg.font.Font('Oswald-Regular.ttf', 32)
@@ -73,18 +58,37 @@ def main():
          Pawn(7, 6, "white")
     )
 
-    def check(turn, live_pieces,chess_grid):
+    def get_clicked_piece(live_pieces, mouse_pos):
+        for piece in live_pieces:
+            if piece.rect.collidepoint(mouse_pos):
+                return piece
+        return None
 
-        lst = [piece for piece in live_pieces if piece.color == turn]
-        for piece in lst:
+    def get_target(live_pieces, board, mouse_pos):
+        for piece in live_pieces:
+            if piece.rect.collidepoint(mouse_pos):
+                return piece
+        for tile in board:
+            if tile.rect.collidepoint(mouse_pos):
+                return tile
+        return None
+
+    def check(turn, live_pieces, chess_grid):
+        enemy_pieces = [piece for piece in live_pieces if piece.color != turn]
+
+        king = next(piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn)
+        king_pos = (king.x, king.y)
+
+        for piece in enemy_pieces:
             piece.legal_move(chess_grid)
 
-        king = [piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn][0]
-        if (king.x, king.y) in reduce(lambda x, y: x | y.movable_tiles, lst,set()):
-            print("Check")
-            return True
-        else:
-            return False
+        # Check if any enemy piece can attack the king
+        for piece in enemy_pieces:
+            if king_pos in piece.movable_tiles:
+                print("Check")
+                return True
+
+        return False
 
     def checkmate(turn):
         if turn == "white":
@@ -127,7 +131,6 @@ def main():
         clicked_piece.movable_tiles.clear()
         if not clicked_piece.moved:
             clicked_piece.moved = True
-        checked = check(turn,live_pieces,chess_grid)
 
         return True
 
@@ -136,6 +139,7 @@ def main():
     while True:
         text = font.render(turn, True, (255, 0, 0))
         trect = text.get_rect()
+        checked = check(turn, live_pieces, chess_grid)
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
