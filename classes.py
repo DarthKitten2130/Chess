@@ -22,11 +22,6 @@ class Piece(pg.sprite.Sprite):
         self.movable_tiles = []
         self.moved = False
 
-    def copy(self):
-        new_piece = self.__class__(self.x, self.y, self.color)
-        new_piece.moved = self.moved
-        return new_piece
-
     def kill(self,live_pieces,dead_pieces):
         dead_pieces.add(self)
         live_pieces.remove(self)

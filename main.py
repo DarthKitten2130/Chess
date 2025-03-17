@@ -1,5 +1,3 @@
-import copy
-
 import pygame as pg
 from classes import *
 
@@ -78,7 +76,7 @@ def main():
     def check(turn, live_pieces, chess_grid):
         enemy_pieces = [piece for piece in live_pieces if piece.color != turn]
 
-        king = [piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn][0]
+        king = next(piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn)
         king_pos = (king.x, king.y)
 
         for piece in enemy_pieces:
@@ -87,6 +85,7 @@ def main():
         # Check if any enemy piece can attack the king
         for piece in enemy_pieces:
             if king_pos in piece.movable_tiles:
+                print("Check")
                 return True
 
         return False
@@ -99,32 +98,27 @@ def main():
         pg.quit()
         quit()
 
-    def check_moves(turn, live_pieces, chess_grid):
+
+    def check_moves(turn,live_pieces,chess_grid):
         lst = [piece for piece in live_pieces if piece.color == turn]
         mt = set()
-
         for piece in lst:
-            piece.legal_move(chess_grid)  # Get possible moves for each piece
+            piece.legal_move(chess_grid)
 
             for coord in piece.movable_tiles:
-                # Create a deep copy of the chess board
-                simulated_grid = {{j: chess_grid[i][j].copy() if chess_grid[i][j] else None for j in range(8)} for i in range(8)}
-
-                # Move the piece in the simulated grid
-                simulated_piece = copy.deepcopy(piece)
-                simulated_grid[piece.x][piece.y] = None
-                simulated_piece.x, simulated_piece.y = coord
-                simulated_grid[coord[0]][coord[1]] = simulated_piece
-
-                # Check if the move still results in check
-                if not check(turn, live_pieces, simulated_grid):
+                ngw = chess_grid
+                ngw[piece.x][piece.y] = None
+                ngw[coord[0]][coord[1]] = piece
+                if not check(turn,live_pieces,ngw):
                     mt.add(coord)
 
-        if not mt:
-            checkmate(turn)  # No valid moves → Checkmate
+        if len(mt) == 0:
+            checkmate(turn)
             return None
         else:
             return mt
+
+
 
     def move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces):
         global checked
@@ -179,14 +173,12 @@ def main():
 
                         clicked_piece = None
                         target = None
-                        mt.clear()
                         if moved:
                             if turn == "white":
                                 turn = "black"
                             else:
                                 turn = "white"
                             moved = False
-
 
                     else:
                         clicked_piece = None
