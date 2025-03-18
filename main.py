@@ -167,7 +167,7 @@ def main():
                 if checked:
                     mt = check_moves(turn,live_pieces,chess_grid)
                 else:
-                    mt = set()
+                    mt = set([(x,y) for x in range(8) for y in range(8)])
                 if not clicked_piece:
                     try:
                         clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
@@ -177,15 +177,15 @@ def main():
                 else:
                     if clicked_piece.color == turn:
                         target = get_target(live_pieces, board, mouse_pos)
-                        if isinstance(target, Tile) and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
+                        if isinstance(target, Tile) and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
-                        elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
+                        elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             clicked_piece.castle(target, chess_grid)
                             clicked_piece.movable_tiles.clear()
                             moved = True
 
-                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
+                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             target.kill(live_pieces, dead_pieces)
                             moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
