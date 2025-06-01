@@ -101,31 +101,33 @@ def main():
         return new_grid
 
     def check_moves(turn, live_pieces, chess_grid):
-        lst = [piece for piece in live_pieces if piece.color == turn]  # Get all pieces of current player
+        lst = [piece for piece in live_pieces if piece.color == turn]
         mt = set()
 
         for piece in lst:
-            piece.legal_move(chess_grid)  # Update possible moves
-            original_x, original_y = piece.x, piece.y  # Store original position
+            piece.legal_move(chess_grid)
+            original_x, original_y = piece.x, piece.y
 
             for coord in piece.movable_tiles:
-                simulated_grid = copy_chess_grid(chess_grid)  # Use the manual copy function
-
+                simulated_grid = copy_chess_grid(chess_grid)
                 # Move piece in simulated grid
                 simulated_grid[original_x][original_y] = None
                 simulated_piece = simulated_grid[coord[0]][coord[1]] = piece.__class__(coord[0], coord[1], piece.color)
                 simulated_piece.moved = piece.moved
 
-                # Check if the move still results in check
-                if not check(turn, live_pieces, simulated_grid):
-                    mt.add(coord)  # Valid move
+                # Build simulated live_pieces group from the simulated grid
+                simulated_pieces = []
+                for i in range(8):
+                    for j in range(8):
+                        if simulated_grid[i][j] is not None:
+                            simulated_pieces.append(simulated_grid[i][j])
 
-                # No need to restore `piece.x, piece.y` since we never modified the real object
+                if not check(turn, simulated_pieces, simulated_grid):
+                    mt.add((coord[0], coord[1]))  # Use tuple for hashability
 
-        print(mt)  # Debugging: Print legal moves avoiding check
-
+        print(mt)
         if not mt:
-            checkmate(turn)  # No valid moves = Checkmate
+            checkmate(turn)
             return None
         else:
             return mt
@@ -164,10 +166,7 @@ def main():
                 quit()
             elif event.type == pg.MOUSEBUTTONUP:
                 mouse_pos = pg.mouse.get_pos()
-                if checked:
-                    mt = check_moves(turn,live_pieces,chess_grid)
-                else:
-                    mt = set([(x,y) for x in range(8) for y in range(8)])
+                mt = check_moves(turn, live_pieces, chess_grid)
                 if not clicked_piece:
                     try:
                         clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
