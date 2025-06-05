@@ -73,57 +73,6 @@ def main():
                 return tile
         return None
 
-    def copy_chess_grid(chess_grid):
-        new_grid = {i: {j: None for j in range(8)} for i in range(8)}
-        for i in range(8):
-            for j in range(8):
-                if chess_grid[i][j] is not None:
-                    piece = chess_grid[i][j]
-                    new_grid[i][j] = piece.__class__(piece.x, piece.y, piece.color)  # Create new instance
-                    new_grid[i][j].movable_tiles = piece.movable_tiles.copy()  # Copy move data
-                    new_grid[i][j].moved = piece.moved  # Preserve moved status
-        return new_grid
-
-    def check_moves(turn, live_pieces, chess_grid):
-        lst = [piece for piece in live_pieces if piece.color == turn]
-        mt = set()
-
-        for piece in lst:
-            piece.legal_move(chess_grid)
-            original_x, original_y = piece.x, piece.y
-
-            for coord in piece.movable_tiles:
-                simulated_grid = copy_chess_grid(chess_grid)
-                # Move piece in simulated grid
-                simulated_grid[original_x][original_y] = None
-                simulated_piece = simulated_grid[coord[0]][coord[1]] = piece.__class__(coord[0], coord[1], piece.color)
-                simulated_piece.moved = piece.moved
-
-                # Build simulated live_pieces group from the simulated grid
-                simulated_pieces = []
-                for i in range(8):
-                    for j in range(8):
-                        if simulated_grid[i][j] is not None:
-                            simulated_pieces.append(simulated_grid[i][j])
-                simuluated_king = next((p for p in simulated_pieces if isinstance(p, King) and p.color == turn), None)
-
-                if not simuluated_king.check(turn, simulated_pieces, simulated_grid):
-                    mt.add((coord[0], coord[1]))  # Use tuple for hashability
-
-        print(mt)
-        if not mt:
-            checkmate(turn)
-            return None
-        else:
-            return mt
-
-    def checkmate(turn):
-        if turn == "white":
-            print("Black wins")
-        else:
-            print("White wins")
-        pg.quit()
-        quit()
 
     def move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces):
         global checked
@@ -155,7 +104,7 @@ def main():
                 if not clicked_piece:
                     try:
                         clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
-                        mt = check_moves(turn, live_pieces, chess_grid)
+                        mt = clicked_piece.check_moves(turn, live_pieces, chess_grid)
                     except AttributeError:
                         pass
                 else:

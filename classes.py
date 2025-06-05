@@ -30,6 +30,58 @@ class Piece(pg.sprite.Sprite):
         pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
 
 
+    def check_moves(self,turn, live_pieces, chess_grid):
+        mt = set()
+
+        self.legal_move(chess_grid)
+        original_x, original_y = self.x, self.y
+
+        for coord in self.movable_tiles:
+            simulated_grid = self.copy_chess_grid(chess_grid)
+            # Move piece in simulated grid
+            simulated_grid[original_x][original_y] = None
+            simulated_piece = simulated_grid[coord[0]][coord[1]] = self.__class__(coord[0], coord[1], self.color)
+            simulated_piece.moved = self.moved
+
+            # Build simulated live_pieces group from the simulated grid
+            simulated_pieces = []
+            for i in range(8):
+                for j in range(8):
+                    if simulated_grid[i][j] is not None:
+                        simulated_pieces.append(simulated_grid[i][j])
+            simulated_king = next((p for p in simulated_pieces if isinstance(p, King) and p.color == turn), None)
+
+            if not simulated_king.check(turn, simulated_pieces, simulated_grid):
+                mt.add((coord[0], coord[1]))  # Use tuple for hashability
+
+        print(mt)
+        if not mt:
+            self.checkmate(turn)
+            return None
+        else:
+            return mt
+
+    @staticmethod
+    def copy_chess_grid(chess_grid):
+        new_grid = {i: {j: None for j in range(8)} for i in range(8)}
+        for i in range(8):
+            for j in range(8):
+                if chess_grid[i][j] is not None:
+                    piece = chess_grid[i][j]
+                    new_grid[i][j] = piece.__class__(piece.x, piece.y, piece.color)  # Create new instance
+                    new_grid[i][j].movable_tiles = piece.movable_tiles.copy()  # Copy move data
+                    new_grid[i][j].moved = piece.moved  # Preserve moved status
+        return new_grid
+
+    @staticmethod
+    def checkmate(turn):
+        if turn == "white":
+            print("Black wins")
+        else:
+            print("White wins")
+        pg.quit()
+        quit()
+
 class King(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "king")
