@@ -80,6 +80,22 @@ class King(Piece):
         chess_grid[target.x][target.y] = target
 
 
+    def check(self,turn, live_pieces, chess_grid):
+        enemy_pieces = [piece for piece in live_pieces if piece.color != turn]
+
+        king_pos = (self.x, self.y)
+
+        for piece in enemy_pieces:
+            piece.legal_move(chess_grid)
+
+        # Check if any enemy piece can attack the king
+        for piece in enemy_pieces:
+            if king_pos in piece.movable_tiles:
+                return True
+
+        return False
+
+
 class Rook(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "rook")

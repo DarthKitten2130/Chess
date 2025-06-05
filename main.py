@@ -73,22 +73,6 @@ def main():
                 return tile
         return None
 
-    def check(turn, live_pieces, chess_grid):
-        enemy_pieces = [piece for piece in live_pieces if piece.color != turn]
-
-        king = next(piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn)
-        king_pos = (king.x, king.y)
-
-        for piece in enemy_pieces:
-            piece.legal_move(chess_grid)
-
-        # Check if any enemy piece can attack the king
-        for piece in enemy_pieces:
-            if king_pos in piece.movable_tiles:
-                return True
-
-        return False
-
     def copy_chess_grid(chess_grid):
         new_grid = {i: {j: None for j in range(8)} for i in range(8)}
         for i in range(8):
