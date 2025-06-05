@@ -105,8 +105,9 @@ def main():
                     for j in range(8):
                         if simulated_grid[i][j] is not None:
                             simulated_pieces.append(simulated_grid[i][j])
+                simuluated_king = next((p for p in simulated_pieces if isinstance(p, King) and p.color == turn), None)
 
-                if not check(turn, simulated_pieces, simulated_grid):
+                if not simuluated_king.check(turn, simulated_pieces, simulated_grid):
                     mt.add((coord[0], coord[1]))  # Use tuple for hashability
 
         print(mt)
@@ -143,24 +144,24 @@ def main():
     while True:
         text = font.render(turn, True, (255, 0, 0))
         trect = text.get_rect()
-        checked = check(turn, live_pieces, chess_grid)
+        t_king = next((p for p in live_pieces if isinstance(p, King) and p.color == turn), None)
+        checked = t_king.check(turn, live_pieces, chess_grid)
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 quit()
             elif event.type == pg.MOUSEBUTTONUP:
                 mouse_pos = pg.mouse.get_pos()
-                mt = check_moves(turn, live_pieces, chess_grid)
                 if not clicked_piece:
                     try:
                         clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
-                        clicked_piece.legal_move(chess_grid)
+                        mt = check_moves(turn, live_pieces, chess_grid)
                     except AttributeError:
                         pass
                 else:
                     if clicked_piece.color == turn:
                         target = get_target(live_pieces, board, mouse_pos)
-                        if isinstance(target, Tile) and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
+                        if isinstance(target, Tile) and (target.x, target.y)  and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
                         elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
@@ -168,7 +169,7 @@ def main():
                             clicked_piece.movable_tiles.clear()
                             moved = True
 
-                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
+                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y)  and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             target.kill(live_pieces, dead_pieces)
                             moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
