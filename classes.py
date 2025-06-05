@@ -30,11 +30,60 @@ class Piece(pg.sprite.Sprite):
         pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
 
 
+    def check_moves(self, turn, chess_grid):
+        mt = set()
+
+        self.legal_move(chess_grid)
+        original_x, original_y = self.x, self.y
+
+        for coord in self.movable_tiles:
+            simulated_grid = self.copy_chess_grid(chess_grid)
+            # Move piece in simulated grid
+            simulated_grid[original_x][original_y] = None
+            simulated_piece = simulated_grid[coord[0]][coord[1]] = self.__class__(coord[0], coord[1], self.color)
+            simulated_piece.moved = self.moved
+
+            # Build simulated live_pieces group from the simulated grid
+            simulated_pieces = []
+            for i in range(8):
+                for j in range(8):
+                    if simulated_grid[i][j] is not None:
+                        simulated_pieces.append(simulated_grid[i][j])
+            simulated_king = next((p for p in simulated_pieces if isinstance(p, King) and p.color == turn), None)
+
+            if not simulated_king.check(turn, simulated_pieces, simulated_grid):
+                mt.add((coord[0], coord[1]))  # Use tuple for hashability
+
+        print(mt)
+        return mt
+
+    @staticmethod
+    def copy_chess_grid(chess_grid):
+        new_grid = {i: {j: None for j in range(8)} for i in range(8)}
+        for i in range(8):
+            for j in range(8):
+                if chess_grid[i][j] is not None:
+                    piece = chess_grid[i][j]
+                    new_grid[i][j] = piece.__class__(piece.x, piece.y, piece.color)  # Create new instance
+                    new_grid[i][j].movable_tiles = piece.movable_tiles.copy()  # Copy move data
+                    new_grid[i][j].moved = piece.moved  # Preserve moved status
+        return new_grid
+
+    @staticmethod
+    def checkmate(turn):
+        if turn == "white":
+            print("Black wins")
+        else:
+            print("White wins")
+        pg.quit()
+        quit()
+
+
 class King(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "king")
 
-    def kill(self):
+    def kill(self,live_pieces, dead_pieces):
         raise AttributeError("Kings cannot be killed")
 
     def legal_move(self, chess_grid):
@@ -78,6 +127,22 @@ class King(Piece):
         target.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
         chess_grid[self.x][self.y] = self
         chess_grid[target.x][target.y] = target
+
+
+    def check(self,turn, live_pieces, chess_grid):
+        enemy_pieces = [piece for piece in live_pieces if piece.color != turn]
+
+        king_pos = (self.x, self.y)
+
+        for piece in enemy_pieces:
+            piece.legal_move(chess_grid)
+
+        # Check if any enemy piece can attack the king
+        for piece in enemy_pieces:
+            if king_pos in piece.movable_tiles:
+                return True
+
+        return False
 
 
 class Rook(Piece):
@@ -241,7 +306,7 @@ class Pawn(Piece):
 
 
 
-def promote(self,board,screen,live_pieces,dead_pieces,turn):
+def promote(self,screen,live_pieces,dead_pieces,turn):
 
     popup = True
     selected = None
