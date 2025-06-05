@@ -21,6 +21,7 @@ class Piece(pg.sprite.Sprite):
         self.rect = pg.Rect(x * Tile.tilesize, y * Tile.tilesize, Tile.tilesize, Tile.tilesize)
         self.movable_tiles = []
         self.moved = False
+        self.mt = set()
 
     def kill(self,live_pieces,dead_pieces):
         dead_pieces.add(self)
@@ -28,6 +29,59 @@ class Piece(pg.sprite.Sprite):
 
     def outline(self,screen):
         pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
+
+
+    def copy_chess_grid(chess_grid):
+        new_grid = {i: {j: None for j in range(8)} for i in range(8)}
+        for i in range(8):
+            for j in range(8):
+                if chess_grid[i][j] is not None:
+                    piece = chess_grid[i][j]
+                    new_grid[i][j] = piece.__class__(piece.x, piece.y, piece.color)  # Create new instance
+                    new_grid[i][j].movable_tiles = piece.movable_tiles.copy()  # Copy move data
+                    new_grid[i][j].moved = piece.moved  # Preserve moved status
+        return new_grid
+
+
+    def check_moves(self,turn, live_pieces, chess_grid):
+
+        self.legal_move(chess_grid)
+        original_x, original_y = self.x, self.y
+
+        for coord in self.movable_tiles:
+            simulated_grid = self.copy_chess_grid(chess_grid)
+            # Move piece in simulated grid
+            simulated_grid[original_x][original_y] = None
+            simulated_piece = simulated_grid[coord[0]][coord[1]] = self.__class__(coord[0], coord[1], self.color)
+            simulated_piece.moved = self.moved
+
+            # Build simulated live_pieces group from the simulated grid
+            simulated_pieces = []
+            for i in range(8):
+                for j in range(8):
+                    if simulated_grid[i][j] is not None:
+                        simulated_pieces.append(simulated_grid[i][j])
+
+            if not self.check(turn, simulated_pieces, simulated_grid):
+                self.mt.add((coord[0], coord[1]))  # Use tuple for hashability
+
+        print(self.mt)
+        if not self.mt:
+            self.checkmate(turn)
+            return None
+        else:
+            return self.mt
+
+    def checkmate(self,turn):
+        if turn == "white":
+            print("Black wins")
+        else:
+            print("White wins")
+        pg.quit()
+        quit()
+
+
+
 
 
 class King(Piece):

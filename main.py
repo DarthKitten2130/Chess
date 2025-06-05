@@ -14,7 +14,6 @@ def main():
     target = None
     turn = "white"
     moved = False
-    checked = False
 
     pg.init()
     pg.font.init()
@@ -73,72 +72,6 @@ def main():
                 return tile
         return None
 
-    def check(turn, live_pieces, chess_grid):
-        enemy_pieces = [piece for piece in live_pieces if piece.color != turn]
-
-        king = next(piece for piece in live_pieces if isinstance(piece, King) and piece.color == turn)
-        king_pos = (king.x, king.y)
-
-        for piece in enemy_pieces:
-            piece.legal_move(chess_grid)
-
-        # Check if any enemy piece can attack the king
-        for piece in enemy_pieces:
-            if king_pos in piece.movable_tiles:
-                return True
-
-        return False
-
-    def copy_chess_grid(chess_grid):
-        new_grid = {i: {j: None for j in range(8)} for i in range(8)}
-        for i in range(8):
-            for j in range(8):
-                if chess_grid[i][j] is not None:
-                    piece = chess_grid[i][j]
-                    new_grid[i][j] = piece.__class__(piece.x, piece.y, piece.color)  # Create new instance
-                    new_grid[i][j].movable_tiles = piece.movable_tiles.copy()  # Copy move data
-                    new_grid[i][j].moved = piece.moved  # Preserve moved status
-        return new_grid
-
-    def check_moves(turn, live_pieces, chess_grid):
-        lst = [piece for piece in live_pieces if piece.color == turn]
-        mt = set()
-
-        for piece in lst:
-            piece.legal_move(chess_grid)
-            original_x, original_y = piece.x, piece.y
-
-            for coord in piece.movable_tiles:
-                simulated_grid = copy_chess_grid(chess_grid)
-                # Move piece in simulated grid
-                simulated_grid[original_x][original_y] = None
-                simulated_piece = simulated_grid[coord[0]][coord[1]] = piece.__class__(coord[0], coord[1], piece.color)
-                simulated_piece.moved = piece.moved
-
-                # Build simulated live_pieces group from the simulated grid
-                simulated_pieces = []
-                for i in range(8):
-                    for j in range(8):
-                        if simulated_grid[i][j] is not None:
-                            simulated_pieces.append(simulated_grid[i][j])
-
-                if not check(turn, simulated_pieces, simulated_grid):
-                    mt.add((coord[0], coord[1]))  # Use tuple for hashability
-
-        print(mt)
-        if not mt:
-            checkmate(turn)
-            return None
-        else:
-            return mt
-
-    def checkmate(turn):
-        if turn == "white":
-            print("Black wins")
-        else:
-            print("White wins")
-        pg.quit()
-        quit()
 
     def move(clicked_piece,target,turn,chess_grid,screen,live_pieces,dead_pieces):
         chess_grid[clicked_piece.x][clicked_piece.y] = None
@@ -158,7 +91,6 @@ def main():
     while True:
         text = font.render(turn, True, (255, 0, 0))
         trect = text.get_rect()
-        checked = check(turn, live_pieces, chess_grid)
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
