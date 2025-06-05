@@ -30,7 +30,7 @@ class Piece(pg.sprite.Sprite):
         pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
 
 
-    def check_moves(self,turn, live_pieces, chess_grid):
+    def check_moves(self, turn, chess_grid):
         mt = set()
 
         self.legal_move(chess_grid)
@@ -55,11 +55,7 @@ class Piece(pg.sprite.Sprite):
                 mt.add((coord[0], coord[1]))  # Use tuple for hashability
 
         print(mt)
-        if not mt:
-            self.checkmate(turn)
-            return None
-        else:
-            return mt
+        return mt
 
     @staticmethod
     def copy_chess_grid(chess_grid):
@@ -81,6 +77,7 @@ class Piece(pg.sprite.Sprite):
             print("White wins")
         pg.quit()
         quit()
+
 
 class King(Piece):
     def __init__(self, x, y, color):
@@ -260,7 +257,7 @@ class Knight(Piece):
         for i in range(-2,3):
             for j in range(-2,3):
                 if abs(i) + abs(j) == 3:
-                    if 0 <= self.x+i <= 7 and 0 <= self.y+j <= 7 and not chess_grid[self.x+i][self.y+j]:
+                    if 0 <= self.x+i <= 7 and 0 <= self.y+j <= 7:
                         if chess_grid[self.x+i][self.y+j] and chess_grid[self.x+i][self.y+j].color != self.color:
                             lst.add((self.x+i,self.y+j))
 
