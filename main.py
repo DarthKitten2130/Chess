@@ -104,7 +104,15 @@ def main():
                 if not clicked_piece:
                     try:
                         clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
-                        mt = clicked_piece.check_moves(turn, live_pieces, chess_grid)
+                        mt = clicked_piece.check_moves(turn, chess_grid)
+                        x = set()
+                        for piece in (piece for piece in live_pieces if piece.color == turn):
+                            a = piece.check_moves(turn, chess_grid)
+                            x = x.union(a)
+
+                        if not x and checked:
+                            Piece.checkmate(turn)
+
                     except AttributeError:
                         pass
                 else:
@@ -122,6 +130,7 @@ def main():
                             target.kill(live_pieces, dead_pieces)
                             moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
+                        mt.clear()
                         clicked_piece = None
                         target = None
                         if moved:
