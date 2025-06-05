@@ -2,7 +2,6 @@ import pygame as pg
 from classes import *
 
 
-
 def main():
     screen = pg.display.set_mode((1440, 1440))
     pg.display.set_caption('Chess')
@@ -21,41 +20,41 @@ def main():
     font = pg.font.Font('Oswald-Regular.ttf', 32)
     for i in range(8):
         for j in range(8):
-            board.add(Tile(i,j))
+            board.add(Tile(i, j))
 
     live_pieces.add(
-         Rook(7, 0, "black"),
-         Rook(0, 0, "black"),
-         Knight(6, 0, "black"),
-         Knight(1, 0, "black"),
-         Bishop(2, 0, "black"),
-         Bishop(5, 0, "black"),
-         Queen(3, 0, "black"),
-         King(4, 0, "black"),
-         Pawn(0, 1, "black"),
-         Pawn(1, 1, "black"),
-         Pawn(2, 1, "black"),
-         Pawn(3, 1, "black"),
-         Pawn(4, 1, "black"),
-         Pawn(5, 1, "black"),
-         Pawn(6, 1, "black"),
-         Pawn(7, 1, "black"),
-         Rook(0, 7, "white"),
-         Rook(7, 7, "white"),
-         Knight(1, 7, "white"),
-         Knight(6, 7, "white"),
-         Bishop(2, 7, "white"),
-         Bishop(5, 7, "white"),
-         Queen(3, 7, "white"),
-         King(4, 7, "white"),
-         Pawn(0, 6, "white"),
-         Pawn(1, 6, "white"),
-         Pawn(2, 6, "white"),
-         Pawn(3, 6, "white"),
-         Pawn(4, 6, "white"),
-         Pawn(5, 6, "white"),
-         Pawn(6, 6, "white"),
-         Pawn(7, 6, "white")
+        Rook(7, 0, "black"),
+        Rook(0, 0, "black"),
+        Knight(6, 0, "black"),
+        Knight(1, 0, "black"),
+        Bishop(2, 0, "black"),
+        Bishop(5, 0, "black"),
+        Queen(3, 0, "black"),
+        King(4, 0, "black"),
+        Pawn(0, 1, "black"),
+        Pawn(1, 1, "black"),
+        Pawn(2, 1, "black"),
+        Pawn(3, 1, "black"),
+        Pawn(4, 1, "black"),
+        Pawn(5, 1, "black"),
+        Pawn(6, 1, "black"),
+        Pawn(7, 1, "black"),
+        Rook(0, 7, "white"),
+        Rook(7, 7, "white"),
+        Knight(1, 7, "white"),
+        Knight(6, 7, "white"),
+        Bishop(2, 7, "white"),
+        Bishop(5, 7, "white"),
+        Queen(3, 7, "white"),
+        King(4, 7, "white"),
+        Pawn(0, 6, "white"),
+        Pawn(1, 6, "white"),
+        Pawn(2, 6, "white"),
+        Pawn(3, 6, "white"),
+        Pawn(4, 6, "white"),
+        Pawn(5, 6, "white"),
+        Pawn(6, 6, "white"),
+        Pawn(7, 6, "white")
     )
 
     def get_clicked_piece(live_pieces, mouse_pos):
@@ -73,8 +72,7 @@ def main():
                 return tile
         return None
 
-
-    def move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces):
+    def move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces, dead_pieces):
         global checked
         chess_grid[clicked_piece.x][clicked_piece.y] = None
         clicked_piece.x, clicked_piece.y = target.x, target.y
@@ -87,8 +85,6 @@ def main():
             clicked_piece.moved = True
 
         return True
-
-
 
     while True:
         text = font.render(turn, True, (255, 0, 0))
@@ -118,17 +114,26 @@ def main():
                 else:
                     if clicked_piece.color == turn:
                         target = get_target(live_pieces, board, mouse_pos)
-                        if isinstance(target, Tile) and (target.x, target.y)  and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
-                            moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
+                        if isinstance(target, Tile) and (target.x, target.y) and (target.x, target.y) != (
+                                clicked_piece.x, clicked_piece.y) and (target.x, target.y) in mt:
+                            moved = move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces,
+                                         dead_pieces)
 
-                        elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
+                        elif isinstance(clicked_piece, (King, Rook)) and isinstance(target, (King,
+                                                                                             Rook)) and clicked_piece.color == target.color and (
+                                target.x, target.y) != (clicked_piece.x, clicked_piece.y) and (target.x,
+                                                                                               target.y) in mt:
                             clicked_piece.castle(target, chess_grid)
                             clicked_piece.movable_tiles.clear()
                             moved = True
 
-                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y)  and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
+                        elif isinstance(target, Piece) and not isinstance(target,
+                                                                          King) and target.color != clicked_piece.color and (
+                                target.x, target.y) and (target.x, target.y) != (clicked_piece.x, clicked_piece.y) and (
+                                target.x, target.y) in mt:
                             target.kill(live_pieces, dead_pieces)
-                            moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
+                            moved = move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces,
+                                         dead_pieces)
 
                         mt.clear()
                         clicked_piece = None
@@ -154,6 +159,7 @@ def main():
         screen.blit(text, trect)
 
         pg.display.flip()
+
 
 if __name__ == '__main__':
     main()
