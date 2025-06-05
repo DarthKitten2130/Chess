@@ -4,11 +4,8 @@ from classes import *
 
 
 def main():
-    # Initalise pygame and create the main window
     screen = pg.display.set_mode((1440, 1440))
     pg.display.set_caption('Chess')
-
-    # Initialise the chess grid and create groups for pieces
     chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
     board = pg.sprite.Group()
     live_pieces = pg.sprite.Group()
@@ -18,10 +15,6 @@ def main():
     turn = "white"
     moved = False
 
-    # Create a dummy piece for checkmate detection
-    cls = Piece(0,0,"white","queen")
-
-    # Initialize pygame and font
     pg.init()
     pg.font.init()
     font = pg.font.Font('Oswald-Regular.ttf', 32)
@@ -64,14 +57,12 @@ def main():
          Pawn(7, 6, "white")
     )
 
-    # Gets the piece that was clicked on
     def get_clicked_piece(live_pieces, mouse_pos):
         for piece in live_pieces:
             if piece.rect.collidepoint(mouse_pos):
                 return piece
         return None
 
-    # Gets the target tile or piece that was clicked on
     def get_target(live_pieces, board, mouse_pos):
         for piece in live_pieces:
             if piece.rect.collidepoint(mouse_pos):
@@ -81,7 +72,7 @@ def main():
                 return tile
         return None
 
-    # Moves the clicked piece to the target tile or captures the target piece
+
     def move(clicked_piece,target,turn,chess_grid,screen,live_pieces,dead_pieces):
         chess_grid[clicked_piece.x][clicked_piece.y] = None
         clicked_piece.x, clicked_piece.y = target.x, target.y
@@ -89,6 +80,7 @@ def main():
         chess_grid[target.x][target.y] = clicked_piece
         if isinstance(clicked_piece, Pawn) and clicked_piece.y in (0, 7):
             promote(clicked_piece, chess_grid, screen, live_pieces, dead_pieces, turn)
+        clicked_piece.movable_tiles.clear()
         if not clicked_piece.moved:
             clicked_piece.moved = True
 
@@ -105,26 +97,30 @@ def main():
                 quit()
             elif event.type == pg.MOUSEBUTTONUP:
                 mouse_pos = pg.mouse.get_pos()
+                mt = check_moves(turn, live_pieces, chess_grid)
                 if not clicked_piece:
-                        try:
-                            clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
-                            clicked_piece.check_moves(turn,live_pieces,chess_grid)
-                        except AttributeError:
-                            pass
+                    try:
+                        clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
+                        clicked_piece.legal_move(chess_grid)
+                    except AttributeError:
+                        pass
                 else:
                     if clicked_piece.color == turn:
                         target = get_target(live_pieces, board, mouse_pos)
-                        if isinstance(target, Tile) and (target.x, target.y) in clicked_piece.mt and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
+                        if isinstance(target, Tile) and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             moved = move(clicked_piece,target,turn,chess_grid,screen,live_pieces,dead_pieces)
 
-                        elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
+                        elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             clicked_piece.castle(target, chess_grid)
+                            clicked_piece.movable_tiles.clear()
                             moved = True
 
-                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y) in clicked_piece.mt and (target.x,target.y) != (clicked_piece.x,clicked_piece.y):
+                        elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             target.kill(live_pieces, dead_pieces)
                             moved = move(clicked_piece,target,turn,chess_grid,screen,live_pieces,dead_pieces)
 
+                        clicked_piece = None
+                        target = None
                         if moved:
                             if turn == "white":
                                 turn = "black"
@@ -132,24 +128,11 @@ def main():
                                 turn = "white"
                             moved = False
 
-                        check_set = set()
-                        enemy_pieces = [piece for piece in live_pieces if piece.color != turn]
-                        for piece in enemy_pieces:
-                            piece.check_moves(turn,live_pieces,chess_grid)
-                            check_set = check_set.union(piece.mt)
-                        print("set",check_set)
-
-                        if not check_set and cls.check(turn, live_pieces, chess_grid):
-                            cls.checkmate(turn)
-                        clicked_piece.mt.clear()
-                        clicked_piece = None
-                        target = None
-
                     else:
                         clicked_piece = None
                         target = None
                         continue
-                    print(live_pieces)
+
         for piece in live_pieces:
             chess_grid[piece.x][piece.y] = piece
         board.draw(screen)

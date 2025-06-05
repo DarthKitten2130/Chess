@@ -31,7 +31,7 @@ class Piece(pg.sprite.Sprite):
         pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
 
 
-    def copy_chess_grid(self,chess_grid):
+    def copy_chess_grid(chess_grid):
         new_grid = {i: {j: None for j in range(8)} for i in range(8)}
         for i in range(8):
             for j in range(8):
@@ -44,7 +44,7 @@ class Piece(pg.sprite.Sprite):
 
 
     def check_moves(self,turn, live_pieces, chess_grid):
-        mt = set()
+
         self.legal_move(chess_grid)
         original_x, original_y = self.x, self.y
 
@@ -63,10 +63,14 @@ class Piece(pg.sprite.Sprite):
                         simulated_pieces.append(simulated_grid[i][j])
 
             if not self.check(turn, simulated_pieces, simulated_grid):
-                mt.add((coord[0], coord[1]))  # Use tuple for hashability
+                self.mt.add((coord[0], coord[1]))  # Use tuple for hashability
 
-        print(mt)
-        self.mt = mt
+        print(self.mt)
+        if not self.mt:
+            self.checkmate(turn)
+            return None
+        else:
+            return self.mt
 
     def checkmate(self,turn):
         if turn == "white":
@@ -75,6 +79,9 @@ class Piece(pg.sprite.Sprite):
             print("White wins")
         pg.quit()
         quit()
+
+
+
 
 
 class King(Piece):
@@ -89,7 +96,7 @@ class King(Piece):
         for i in range(self.x - 1, self.x + 2):
             for j in range(self.y - 1, self.y + 2):
                 if 0 <= i <= 7 and 0 <= j <= 7 and (i, j) != (self.x, self.y):
-                    if chess_grid[i][j] and chess_grid[i][j].color != self.color and not isinstance(chess_grid[i][j], King):
+                    if chess_grid[i][j] and chess_grid[i][j].color != self.color:
                         lst.add((i, j))
                     elif not chess_grid[i][j]:
                         lst.add((i, j))
