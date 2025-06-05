@@ -34,7 +34,7 @@ class King(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "king")
 
-    def kill(self):
+    def kill(self,live_pieces, dead_pieces):
         raise AttributeError("Kings cannot be killed")
 
     def legal_move(self, chess_grid):
@@ -192,7 +192,7 @@ class Knight(Piece):
         for i in range(-2,3):
             for j in range(-2,3):
                 if abs(i) + abs(j) == 3:
-                    if 0 <= self.x+i <= 7 and 0 <= self.y+j <= 7:
+                    if 0 <= self.x+i <= 7 and 0 <= self.y+j <= 7 and not chess_grid[self.x+i][self.y+j]:
                         if chess_grid[self.x+i][self.y+j] and chess_grid[self.x+i][self.y+j].color != self.color:
                             lst.add((self.x+i,self.y+j))
 
@@ -241,7 +241,7 @@ class Pawn(Piece):
 
 
 
-def promote(self,board,screen,live_pieces,dead_pieces,turn):
+def promote(self,screen,live_pieces,dead_pieces,turn):
 
     popup = True
     selected = None
