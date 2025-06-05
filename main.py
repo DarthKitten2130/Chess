@@ -140,7 +140,8 @@ def main():
         pg.quit()
         quit()
 
-    def move(clicked_piece,target,turn,chess_grid,screen,live_pieces,dead_pieces):
+    def move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces):
+        global checked
         chess_grid[clicked_piece.x][clicked_piece.y] = None
         clicked_piece.x, clicked_piece.y = target.x, target.y
         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
@@ -176,7 +177,7 @@ def main():
                     if clicked_piece.color == turn:
                         target = get_target(live_pieces, board, mouse_pos)
                         if isinstance(target, Tile) and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
-                            moved = move(clicked_piece,target,turn,chess_grid,screen,live_pieces,dead_pieces)
+                            moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
                         elif isinstance(clicked_piece,(King,Rook)) and isinstance(target,(King,Rook)) and clicked_piece.color == target.color and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             clicked_piece.castle(target, chess_grid)
@@ -185,7 +186,7 @@ def main():
 
                         elif isinstance(target,Piece) and not isinstance(target,King) and target.color != clicked_piece.color and (target.x, target.y) in clicked_piece.movable_tiles and (target.x,target.y) != (clicked_piece.x,clicked_piece.y) and (target.x,target.y) in mt:
                             target.kill(live_pieces, dead_pieces)
-                            moved = move(clicked_piece,target,turn,chess_grid,screen,live_pieces,dead_pieces)
+                            moved = move(clicked_piece,target,turn,moved,chess_grid,screen,live_pieces,dead_pieces)
 
                         clicked_piece = None
                         target = None
