@@ -262,6 +262,7 @@ class Knight(Piece):
 class Pawn(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "pawn")
+        self.en_passant = False
 
     def legal_move(self, chess_grid, live_pieces):
         lst = set()
@@ -295,6 +296,19 @@ class Pawn(Piece):
                     lst.add((self.x + 1, self.y + 1))
                 if chess_grid[self.x - 1][self.y + 1] and chess_grid[self.x - 1][self.y + 1].color != self.color:
                     lst.add((self.x - 1, self.y + 1))
+
+            # En passant logic
+            if chess_grid[self.x+1][self.y].en_passant:
+                if self.color == 'white':
+                    lst.add((self.x+1, self.y+1))
+                else:
+                    lst.add((self.x+1, self.y-1))
+
+            if chess_grid[self.x-1][self.y].en_passant:
+                if self.color == 'white':
+                    lst.add((self.x-1, self.y+1))
+                else:
+                    lst.add((self.x-1, self.y-1))
         except KeyError:
             pass
         self.movable_tiles = lst
