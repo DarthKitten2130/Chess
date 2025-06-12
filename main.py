@@ -100,10 +100,10 @@ def main():
                 if not clicked_piece:
                     try:
                         clicked_piece = get_clicked_piece(live_pieces, mouse_pos)
-                        mt = clicked_piece.check_moves(turn, chess_grid)
+                        mt = clicked_piece.check_moves(turn, chess_grid,live_pieces)
                         x = set()
                         for piece in (piece for piece in live_pieces if piece.color == turn):
-                            a = piece.check_moves(turn, chess_grid)
+                            a = piece.check_moves(turn, chess_grid, live_pieces)
                             x = x.union(a)
 
                         if not x and checked:
@@ -116,16 +116,22 @@ def main():
                         target = get_target(live_pieces, board, mouse_pos)
                         if isinstance(target, Tile) and (target.x, target.y) and (target.x, target.y) != (
                                 clicked_piece.x, clicked_piece.y) and (target.x, target.y) in mt:
-                            moved = move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces,
-                                         dead_pieces)
 
-                        elif isinstance(clicked_piece, (King, Rook)) and isinstance(target, (King,
-                                                                                             Rook)) and clicked_piece.color == target.color and (
-                                target.x, target.y) != (clicked_piece.x, clicked_piece.y) and (target.x,
-                                                                                               target.y) in mt:
-                            clicked_piece.castle(target, chess_grid)
-                            clicked_piece.movable_tiles.clear()
-                            moved = True
+                            if isinstance(clicked_piece, (King)) and clicked_piece.moved is False and (target.x,target.y) in [(1,0),(1,7),(6,0),(6,7)] and (target.x, target.y) in mt:
+                                print("bruh")
+                                if target.x == 1:
+                                    rook = next((p for p in live_pieces if isinstance(p, Rook) and p.x == 0 and p.color == turn), None)
+                                    clicked_piece.castle(rook, chess_grid)
+                                elif target.x == 6:
+                                    rook = next((p for p in live_pieces if isinstance(p, Rook) and p.x == 7 and p.color == turn), None)
+                                    clicked_piece.castle(rook, chess_grid)
+
+                                clicked_piece.movable_tiles.clear()
+                                moved = True
+
+                            else:
+                                moved = move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces,
+                                             dead_pieces)
 
                         elif isinstance(target, Piece) and not isinstance(target,
                                                                           King) and target.color != clicked_piece.color and (
