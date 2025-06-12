@@ -309,7 +309,7 @@ class Pawn(Piece):
                     lst.add((self.x-1, self.y+1))
                 else:
                     lst.add((self.x-1, self.y-1))
-        except KeyError:
+        except (KeyError, AttributeError):
             pass
         self.movable_tiles = lst
 

@@ -91,6 +91,15 @@ def main():
         trect = text.get_rect()
         t_king = next((p for p in live_pieces if isinstance(p, King) and p.color == turn), None)
         checked = t_king.check(turn, live_pieces, chess_grid)
+
+        try:
+            for pawn in [p for p in live_pieces if isinstance(p, Pawn) and p.color == turn]:
+                if pawn.en_passant:
+                    pawn.en_passant = False
+
+        except AttributeError:
+            pass
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -135,8 +144,29 @@ def main():
                                 moved = True
 
                             else:
+                                if (isinstance(clicked_piece, Pawn) and abs(clicked_piece.x - target.x) == 1 and
+                                        abs(clicked_piece.y - target.y) == 1 and isinstance(target, Tile)):
+                                        if turn == "white":
+                                            if (isinstance(chess_grid[target.x][target.y + 1], Pawn) and
+                                                    chess_grid[target.x][target.y + 1].color != turn):
+                                                chess_grid[target.x][target.y + 1].kill(live_pieces, dead_pieces)
+                                        elif turn == "black":
+                                            if (isinstance(chess_grid[target.x][target.y - 1], Pawn) and
+                                                    chess_grid[target.x][target.y - 1].color != turn):
+                                                chess_grid[target.x][target.y - 1].kill(live_pieces, dead_pieces)
+
+
                                 moved = move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces,
                                              dead_pieces)
+
+                                try:
+                                    if isinstance(clicked_piece,Pawn) and ((isinstance(chess_grid[clicked_piece.x+1][clicked_piece.y], Pawn) and
+                                        chess_grid[clicked_piece.x+1][clicked_piece.y].color != turn) or
+                                        (isinstance(chess_grid[clicked_piece.x-1][clicked_piece.y], Pawn) and
+                                         chess_grid[clicked_piece.x-1][clicked_piece.y].color != turn)):
+                                            clicked_piece.en_passant = True
+                                except KeyError:
+                                    pass
 
                         elif isinstance(target, Piece) and not isinstance(target,
                                                                           King) and target.color != clicked_piece.color and (
