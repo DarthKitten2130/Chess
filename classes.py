@@ -32,10 +32,10 @@ class Piece(pg.sprite.Sprite):
     def outline(self, screen):
         pg.draw.rect(screen, (255, 0, 0), self.rect, 5)
 
-    def check_moves(self, turn, chess_grid,live_pieces):
+    def check_moves(self, turn, chess_grid, live_pieces):
         mt = set()
 
-        self.legal_move(chess_grid,live_pieces)
+        self.legal_move(chess_grid, live_pieces)
         original_x, original_y = self.x, self.y
 
         for coord in self.movable_tiles:
@@ -87,7 +87,7 @@ class King(Piece):
     def kill(self, live_pieces, dead_pieces):
         raise AttributeError("Kings cannot be killed")
 
-    def legal_move(self, chess_grid,live_pieces):
+    def legal_move(self, chess_grid, live_pieces):
         lst = set()
         for i in range(self.x - 1, self.x + 2):
             for j in range(self.y - 1, self.y + 2):
@@ -99,9 +99,12 @@ class King(Piece):
 
         if not self.moved:
             try:
-                l_rook = next((p for p in live_pieces if isinstance(p, Rook) and p.color == self.color and p.x == 0), None)
-                r_rook = next((p for p in live_pieces if isinstance(p, Rook) and p.color == self.color and p.x == 7), None)
-                if not chess_grid[1][self.y] and not chess_grid[2][self.y] and not chess_grid[3][self.y] and not l_rook.moved:
+                l_rook = next((p for p in live_pieces if isinstance(p, Rook) and p.color == self.color and p.x == 0),
+                              None)
+                r_rook = next((p for p in live_pieces if isinstance(p, Rook) and p.color == self.color and p.x == 7),
+                              None)
+                if not chess_grid[1][self.y] and not chess_grid[2][self.y] and not chess_grid[3][
+                    self.y] and not l_rook.moved:
                     lst.add((1, self.y))
 
                 if not chess_grid[5][self.y] and not chess_grid[6][self.y] and not r_rook.moved:
@@ -147,7 +150,7 @@ class King(Piece):
         king_pos = (self.x, self.y)
 
         for piece in enemy_pieces:
-            piece.legal_move(chess_grid,live_pieces)
+            piece.legal_move(chess_grid, live_pieces)
 
         # Check if any enemy piece can attack the king
         for piece in enemy_pieces:
@@ -161,7 +164,7 @@ class Rook(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "rook")
 
-    def legal_move(self, chess_grid,live_pieces):
+    def legal_move(self, chess_grid, live_pieces):
         lst = set()
         for i in range(self.x + 1, 8):
             if chess_grid[i][self.y]:
@@ -202,7 +205,7 @@ class Bishop(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "bishop")
 
-    def legal_move(self, chess_grid,live_pieces):
+    def legal_move(self, chess_grid, live_pieces):
         lst = set()
         directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
         for dx, dy in directions:
@@ -223,12 +226,12 @@ class Queen(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "queen")
 
-    def legal_move(self, chess_grid,live_pieces):
+    def legal_move(self, chess_grid, live_pieces):
         lst = set()
         b = Bishop(self.x, self.y, self.color)
         r = Rook(self.x, self.y, self.color)
-        b.legal_move(chess_grid,live_pieces)
-        r.legal_move(chess_grid,live_pieces)
+        b.legal_move(chess_grid, live_pieces)
+        r.legal_move(chess_grid, live_pieces)
         self.movable_tiles = b.movable_tiles | r.movable_tiles
 
 
@@ -236,7 +239,7 @@ class Knight(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "knight")
 
-    def legal_move(self, chess_grid,live_pieces):
+    def legal_move(self, chess_grid, live_pieces):
         lst = set()
         for i in range(-2, 3):
             for j in range(-2, 3):
@@ -254,7 +257,7 @@ class Pawn(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "pawn")
 
-    def legal_move(self, chess_grid,live_pieces):
+    def legal_move(self, chess_grid, live_pieces):
         lst = set()
         try:
             if not self.moved:
