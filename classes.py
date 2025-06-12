@@ -80,6 +80,12 @@ class Piece(pg.sprite.Sprite):
         quit()
 
 
+    @staticmethod
+    def stalemate():
+        print("Stalemate")
+        pg.quit()
+        quit()
+
 class King(Piece):
     def __init__(self, x, y, color):
         super().__init__(x, y, color, "king")

@@ -108,6 +108,8 @@ def main():
 
                         if not x and checked:
                             Piece.checkmate(turn)
+                        elif not x and not checked:
+                            Piece.stalemate()
 
                     except AttributeError:
                         pass
