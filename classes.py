@@ -70,21 +70,6 @@ class Piece(pg.sprite.Sprite):
                     new_grid[i][j].moved = piece.moved  # Preserve moved status
         return new_grid
 
-    @staticmethod
-    def checkmate(turn):
-        if turn == "white":
-            print("Black wins")
-        else:
-            print("White wins")
-        pg.quit()
-        quit()
-
-    @staticmethod
-    def stalemate():
-        print("Stalemate")
-        pg.quit()
-        quit()
-
 
 class King(Piece):
     def __init__(self, x, y, color):

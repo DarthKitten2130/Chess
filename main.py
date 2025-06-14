@@ -1,4 +1,5 @@
 import pygame as pg
+import time
 from classes import *
 
 
@@ -17,7 +18,8 @@ def main():
 
     pg.init()
     pg.font.init()
-    font = pg.font.Font('Oswald-Regular.ttf', 32)
+    font = pg.font.Font('Oswald-Regular.ttf', 64)
+    text = font.render("", True, (255, 255, 255))
     for i in range(8):
         for j in range(8):
             board.add(Tile(i, j))
@@ -86,11 +88,8 @@ def main():
         return True
 
     while True:
-        text = font.render(turn, True, (255, 0, 0))
-        trect = text.get_rect()
         t_king = next((p for p in live_pieces if isinstance(p, King) and p.color == turn), None)
         checked = t_king.check(turn, live_pieces, chess_grid)
-
         try:
             for pawn in [p for p in live_pieces if isinstance(p, Pawn) and p.color == turn]:
                 if pawn.en_passant:
@@ -115,9 +114,49 @@ def main():
                             x = x.union(a)
 
                         if not x and checked:
-                            Piece.checkmate(turn)
+                            text = font.render("Checkmate! " + turn.capitalize() + " loses!", True, (255, 0, 0))
+
+                            # Redraw everything
+                            board.draw(screen)
+                            live_pieces.draw(screen)
+                            screen.blit(text, (480, 650))
+                            pg.display.flip()
+
+                            # Wait while still processing events
+                            wait_start = time.time()
+                            while time.time() - wait_start < 5:
+                                for event in pg.event.get():
+                                    if event.type == pg.QUIT:
+                                        pg.quit()
+                                        quit()
+                                # Optional: Add a short delay to reduce CPU usage
+                                pg.time.delay(100)
+
+                            pg.quit()
+                            quit()
+
                         elif not x and not checked:
-                            Piece.stalemate()
+                            text = font.render("Stalemate! No legal moves available!", True, (255, 0, 0))
+
+                            # Redraw everything
+                            board.draw(screen)
+                            live_pieces.draw(screen)
+                            screen.blit(text, (480, 650))
+                            pg.display.flip()
+
+                            # Wait while still processing events
+                            wait_start = time.time()
+                            while time.time() - wait_start < 5:
+                                for event in pg.event.get():
+                                    if event.type == pg.QUIT:
+                                        pg.quit()
+                                        quit()
+                                # Optional: Add a short delay to reduce CPU usage
+                                pg.time.delay(100)
+
+                            pg.quit()
+                            quit()
+
 
                     except AttributeError:
                         pass
@@ -196,7 +235,7 @@ def main():
         live_pieces.draw(screen)
         if clicked_piece:
             clicked_piece.outline(screen)
-        screen.blit(text, trect)
+        screen.blit(text, (480,650))
 
         pg.display.flip()
 
