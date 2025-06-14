@@ -79,12 +79,12 @@ class Piece(pg.sprite.Sprite):
         pg.quit()
         quit()
 
-
     @staticmethod
     def stalemate():
         print("Stalemate")
         pg.quit()
         quit()
+
 
 class King(Piece):
     def __init__(self, x, y, color):
@@ -287,29 +287,39 @@ class Pawn(Piece):
                         lst.add((self.x, self.y + 1))
 
             if self.color == 'white':
-                if chess_grid[self.x + 1][self.y - 1] and chess_grid[self.x + 1][self.y - 1].color != self.color:
+                if self.x + 1 <= 7 and self.y - 1 >= 0 and chess_grid[self.x + 1][self.y - 1] and \
+                        chess_grid[self.x + 1][self.y - 1].color != self.color:
                     lst.add((self.x + 1, self.y - 1))
-                if chess_grid[self.x - 1][self.y - 1] and chess_grid[self.x - 1][self.y - 1].color != self.color:
+                if self.x - 1 >= 0 and self.y - 1 >= 0 and chess_grid[self.x - 1][self.y - 1] and \
+                        chess_grid[self.x - 1][self.y - 1].color != self.color:
                     lst.add((self.x - 1, self.y - 1))
             else:
-                if chess_grid[self.x + 1][self.y + 1] and chess_grid[self.x + 1][self.y + 1].color != self.color:
+                if self.x + 1 <= 7 and self.y + 1 <= 7 and chess_grid[self.x + 1][self.y + 1] and \
+                        chess_grid[self.x + 1][self.y + 1].color != self.color:
                     lst.add((self.x + 1, self.y + 1))
-                if chess_grid[self.x - 1][self.y + 1] and chess_grid[self.x - 1][self.y + 1].color != self.color:
+                if self.x - 1 >= 0 and self.y + 1 <= 7 and chess_grid[self.x - 1][self.y + 1] and \
+                        chess_grid[self.x - 1][self.y + 1].color != self.color:
                     lst.add((self.x - 1, self.y + 1))
 
-            # En passant logic
-            if chess_grid[self.x+1][self.y].en_passant:
-                if self.color == 'white':
-                    lst.add((self.x+1, self.y+1))
-                else:
-                    lst.add((self.x+1, self.y-1))
+            # En passant right - ADD BOUNDS CHECK
+            if self.x + 1 <= 7:  # This line is already correct
+                right_piece = chess_grid[self.x + 1][self.y]
+                if isinstance(right_piece, Pawn) and right_piece.color != self.color and right_piece.en_passant:
+                    target_y = self.y - 1 if self.color == 'white' else self.y + 1
+                    if 0 <= target_y <= 7:
+                        lst.add((self.x + 1, target_y))
 
-            if chess_grid[self.x-1][self.y].en_passant:
-                if self.color == 'white':
-                    lst.add((self.x-1, self.y+1))
-                else:
-                    lst.add((self.x-1, self.y-1))
-        except (KeyError, AttributeError):
+            # En passant left - ADD BOUNDS CHECK
+            if self.x - 1 >= 0:  # This line is already correct
+                left_piece = chess_grid[self.x - 1][self.y]
+                if isinstance(left_piece, Pawn) and left_piece.color != self.color and left_piece.en_passant:
+                    target_y = self.y - 1 if self.color == 'white' else self.y + 1
+                    if 0 <= target_y <= 7:
+                        lst.add((self.x - 1, target_y))
+
+
+
+        except (AttributeError, KeyError):
             pass
         self.movable_tiles = lst
 

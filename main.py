@@ -73,7 +73,6 @@ def main():
         return None
 
     def move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces, dead_pieces):
-        global checked
         chess_grid[clicked_piece.x][clicked_piece.y] = None
         clicked_piece.x, clicked_piece.y = target.x, target.y
         clicked_piece.rect.topleft = (target.x * Tile.tilesize, target.y * Tile.tilesize)
