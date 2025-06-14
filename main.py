@@ -18,7 +18,7 @@ def main():
 
     pg.init()
     pg.font.init()
-    font = pg.font.Font('Oswald-Regular.ttf', 64)
+    font = pg.font.SysFont('Arial', 64)
     text = font.render("", True, (255, 255, 255))
     for i in range(8):
         for j in range(8):
@@ -119,7 +119,7 @@ def main():
                             # Redraw everything
                             board.draw(screen)
                             live_pieces.draw(screen)
-                            screen.blit(text, (480, 650))
+                            screen.blit(text, (430, 650))
                             pg.display.flip()
 
                             # Wait while still processing events
