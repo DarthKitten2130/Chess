@@ -1,9 +1,11 @@
 import pygame as pg
 import time
+import ctypes
 from classes import *
 
 
 def main():
+    ctypes.windll.user32.SetProcessDPIAware()
     screen = pg.display.set_mode((1440, 1440))
     pg.display.set_caption('Chess')
     chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
