@@ -323,37 +323,37 @@ class Pawn(Piece):
             pass
         self.movable_tiles = lst
 
+    @staticmethod
+    def promote(self, screen, live_pieces, dead_pieces, turn):
+        popup = True
+        selected = None
 
-def promote(self, screen, live_pieces, dead_pieces, turn):
-    popup = True
-    selected = None
+        pieces = []
+        while popup:
+            promos = pg.sprite.Group()
+            promos.add(
+                Queen(2, 3, turn),
+                Bishop(3, 3, turn),
+                Knight(4, 3, turn),
+                Rook(5, 3, turn))
 
-    pieces = []
-    while popup:
-        promos = pg.sprite.Group()
-        promos.add(
-            Queen(2, 3, turn),
-            Bishop(3, 3, turn),
-            Knight(4, 3, turn),
-            Rook(5, 3, turn))
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    quit()
+                elif event.type == pg.MOUSEBUTTONUP:
+                    mouse_pos = pg.mouse.get_pos()
+                    for piece in promos:
+                        if piece.rect.collidepoint(mouse_pos):
+                            selected = type(piece).__name__
+                            popup = False
+                            promos.empty()
+                            break
+            pieces = {"Queen": Queen, "Bishop": Bishop, "Knight": Knight, "Rook": Rook}
+            screen.fill((255, 87, 51))
+            promos.draw(screen)
+            pg.display.flip()
 
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()
-                quit()
-            elif event.type == pg.MOUSEBUTTONUP:
-                mouse_pos = pg.mouse.get_pos()
-                for piece in promos:
-                    if piece.rect.collidepoint(mouse_pos):
-                        selected = type(piece).__name__
-                        popup = False
-                        promos.empty()
-                        break
-        pieces = {"Queen": Queen, "Bishop": Bishop, "Knight": Knight, "Rook": Rook}
-        screen.fill((255, 87, 51))
-        promos.draw(screen)
-        pg.display.flip()
-
-    self.kill(live_pieces, dead_pieces)
-    self = pieces[selected](self.x, self.y, turn)
-    live_pieces.add(self)
+        self.kill(live_pieces, dead_pieces)
+        self = pieces[selected](self.x, self.y, turn)
+        live_pieces.add(self)
