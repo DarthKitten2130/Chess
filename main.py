@@ -193,15 +193,15 @@ def main():
                                                     chess_grid[target.x][target.y - 1].color != turn):
                                                 chess_grid[target.x][target.y - 1].kill(live_pieces, dead_pieces)
 
-
+                                premove = clicked_piece.y
                                 moved = move(clicked_piece, target, turn, moved, chess_grid, screen, live_pieces,
                                              dead_pieces)
-
+                                postmove = clicked_piece.y
                                 try:
-                                    if isinstance(clicked_piece,Pawn) and ((isinstance(chess_grid[clicked_piece.x+1][clicked_piece.y], Pawn) and
-                                        chess_grid[clicked_piece.x+1][clicked_piece.y].color != turn) or
-                                        (isinstance(chess_grid[clicked_piece.x-1][clicked_piece.y], Pawn) and
-                                         chess_grid[clicked_piece.x-1][clicked_piece.y].color != turn)):
+                                    if (isinstance(clicked_piece,Pawn) and ((isinstance(chess_grid[clicked_piece.x+1][clicked_piece.y], Pawn) and
+                                        chess_grid[clicked_piece.x+1][clicked_piece.y].color != turn)) and abs(premove-postmove) == 2 or
+                                        ((isinstance(chess_grid[clicked_piece.x-1][clicked_piece.y], Pawn) and
+                                         chess_grid[clicked_piece.x-1][clicked_piece.y].color != turn)) and abs(premove-postmove) == 2):
                                             clicked_piece.en_passant = True
                                 except KeyError:
                                     pass
