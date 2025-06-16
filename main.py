@@ -4,7 +4,7 @@ from classes import *
 
 
 def main():
-    screen = pg.display.set_mode((1440, 1440))
+    screen = pg.display.set_mode((720, 720))
     pg.display.set_caption('Chess')
     chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
     board = pg.sprite.Group()

@@ -3,7 +3,7 @@ import sys
 import os
 
 class Tile(pg.sprite.Sprite):
-    tilesize = 180
+    tilesize = 90
 
     def __init__(self, x, y):
         super().__init__()
@@ -21,7 +21,10 @@ class Piece(pg.sprite.Sprite):
         self.x = x
         self.y = y
         self.color = color
-        self.image = pg.image.load(self.resource_path(f"images/{color}/{color}_{type}.png"))
+
+        raw_image = pg.image.load(self.resource_path(f"images/{color}/{color}_{type}.png"))
+        self.image = pg.transform.smoothscale(raw_image, (Tile.tilesize, Tile.tilesize))
+
         self.rect = pg.Rect(x * Tile.tilesize, y * Tile.tilesize, Tile.tilesize, Tile.tilesize)
         self.movable_tiles = []
         self.moved = False
@@ -34,6 +37,7 @@ class Piece(pg.sprite.Sprite):
             base_path = os.path.abspath(".")
 
         return os.path.join(base_path, relative_path)
+
 
 
     def kill(self, live_pieces, dead_pieces):
