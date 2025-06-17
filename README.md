@@ -5,8 +5,7 @@ To run the program:
 2. Install Python if not already installed
 3. Download pygame from pip
 4. Execute main.py
-5. **Please note, the main branch is for Linux systems, while the Windows branch is for Windows systems. Clone as necessary.**
-
+   
 I accept any issues on this repo.
 
 Have fun!
