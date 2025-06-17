@@ -1,7 +1,8 @@
 import pygame as pg
 
 pg.display.init()
-w_size = (720,720)
+w_size = ((pg.display.get_desktop_sizes()[0][0]) * 0.55, (pg.display.get_desktop_sizes()[0][1]) * 0.9)
+
 class Tile(pg.sprite.Sprite):
     tilesize = w_size[1] // 8
 

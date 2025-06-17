@@ -6,7 +6,6 @@ from classes import *
 def main():
     pg.display.init()
     w_size = ((pg.display.get_desktop_sizes()[0][0]) * 0.55, (pg.display.get_desktop_sizes()[0][1]) * 0.9)
-    w_size = (720,720)
     screen = pg.display.set_mode(w_size)
     pg.display.set_caption('Chess')
     chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
