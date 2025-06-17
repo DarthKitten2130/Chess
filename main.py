@@ -4,7 +4,10 @@ from classes import *
 
 
 def main():
-    screen = pg.display.set_mode((1440, 1440))
+    pg.display.init()
+    w_size = ((pg.display.get_desktop_sizes()[0][0]) * 0.55, (pg.display.get_desktop_sizes()[0][1]) * 0.9)
+    w_size = (720,720)
+    screen = pg.display.set_mode(w_size)
     pg.display.set_caption('Chess')
     chess_grid = {i: {j: None for j in range(8)} for i in range(8)}
     board = pg.sprite.Group()
@@ -18,8 +21,10 @@ def main():
 
     pg.init()
     pg.font.init()
-    font = pg.font.SysFont('Arial', 64)
+    t_size = int(64 * (w_size[1] / 1440))
+    font = pg.font.SysFont('Arial', t_size)
     text = font.render("", True, (255, 255, 255))
+    text_rect = text.get_rect(center = (w_size[0] // 2, w_size[1] // 2))
     for i in range(8):
         for j in range(8):
             board.add(Tile(i, j))
@@ -115,11 +120,12 @@ def main():
 
                         if not x and checked:
                             text = font.render("Checkmate! " + turn.capitalize() + " loses!", True, (255, 0, 0))
+                            text_rect = text.get_rect(center=(w_size[0] // 2, w_size[1] // 2))
 
                             # Redraw everything
                             board.draw(screen)
                             live_pieces.draw(screen)
-                            screen.blit(text, (430, 650))
+                            screen.blit(text, text_rect)
                             pg.display.flip()
 
                             # Wait while still processing events
@@ -137,11 +143,12 @@ def main():
 
                         elif not x and not checked:
                             text = font.render("Stalemate! No legal moves available!", True, (255, 0, 0))
+                            text_rect = text.get_rect(center=(w_size[0] // 2, w_size[1] // 2))
 
                             # Redraw everything
                             board.draw(screen)
                             live_pieces.draw(screen)
-                            screen.blit(text, (480, 650))
+                            screen.blit(text, text_rect)
                             pg.display.flip()
 
                             # Wait while still processing events
@@ -235,7 +242,7 @@ def main():
         live_pieces.draw(screen)
         if clicked_piece:
             clicked_piece.outline(screen)
-        screen.blit(text, (480,650))
+        screen.blit(text, text_rect)
 
         pg.display.flip()
 

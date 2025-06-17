@@ -2,8 +2,10 @@ import pygame as pg
 import sys
 import os
 
+pg.display.init()
+w_size = (720,720)
 class Tile(pg.sprite.Sprite):
-    tilesize = 180
+    tilesize = w_size[1] // 8
 
     def __init__(self, x, y):
         super().__init__()
@@ -21,7 +23,7 @@ class Piece(pg.sprite.Sprite):
         self.x = x
         self.y = y
         self.color = color
-        self.image = pg.image.load(self.resource_path(f"images/{color}/{color}_{type}.png"))
+        self.image = pg.transform.scale_by(pg.image.load(f"images/{color}/{color}_{type}.png"),w_size[1] / 1440)
         self.rect = pg.Rect(x * Tile.tilesize, y * Tile.tilesize, Tile.tilesize, Tile.tilesize)
         self.movable_tiles = []
         self.moved = False
