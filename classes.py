@@ -1,6 +1,4 @@
 import pygame as pg
-import sys
-import os
 
 pg.display.init()
 w_size = (720,720)
@@ -27,15 +25,6 @@ class Piece(pg.sprite.Sprite):
         self.rect = pg.Rect(x * Tile.tilesize, y * Tile.tilesize, Tile.tilesize, Tile.tilesize)
         self.movable_tiles = []
         self.moved = False
-
-    @staticmethod
-    def resource_path(relative_path):
-        try:
-            base_path = sys._MEIPASS
-        except AttributeError:
-            base_path = os.path.abspath(".")
-
-        return os.path.join(base_path, relative_path)
 
 
     def kill(self, live_pieces, dead_pieces):
